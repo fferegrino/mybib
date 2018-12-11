@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from mybib.neo4j import get_paper as get_paper_neo4j, insert_paper as insert_paper_neo4j
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import author, editor, journal, keyword, link, page_double_hyphen, doi
@@ -31,16 +32,16 @@ temporary_memory = {}
 
 @app.route('/papers/<identifier>', methods=['GET'])
 def get_paper(identifier):
-    return str(temporary_memory[identifier])
+    return jsonify(get_paper_neo4j(identifier))
 
 
 @app.route("/papers", methods=['POST'])
-def post_papers():
+def post_paper():
     print(request.data.decode('utf-8'))
     bib_database = bibtexparser.loads(request.data.decode('utf-8'), parser=parser)
     [paper] = bib_database.entries
 
-    temporary_memory[paper['ID']] = paper
+    insert_paper_neo4j(paper)
 
     response = jsonify()
     response.status_code = 201
