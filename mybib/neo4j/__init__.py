@@ -29,3 +29,16 @@ def _insert_node(label, attr_dict):
         query = f'CREATE (x:{label} {{'
         query += ', '.join([f'{k}:"{attr_dict[k]}"' for k in attr_dict]) + '})'
         return session.run(query)
+
+
+def insert_reference(referee_id, referenced_id, attr_dict):
+    attributes = ', '.join([f'{k}:"{attr_dict[k]}"' for k in attr_dict])
+    query = f'MATCH (referee:Paper{{ID:"{referee_id}"}}), ' \
+            f'(referenced:Paper{{ID:"{referenced_id}"}}) ' \
+            f'CREATE (referee)-[r:CITED {{{attributes}}}]->(referenced) ' \
+            'RETURN r'
+
+    with DRIVER.session() as session:
+        result = session.run(query)
+        single_result = result.single()
+        return dict(single_result['r'])

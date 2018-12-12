@@ -1,10 +1,13 @@
 from flask import Flask, request, jsonify
-from mybib.neo4j import get_paper as get_paper_neo4j, insert_paper as insert_paper_neo4j
+from mybib.neo4j import get_paper as get_paper_neo4j, insert_paper as insert_paper_neo4j, insert_reference
+from mybib.web.routing.regex_converters import PaperIdConverter
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import author, editor, journal, keyword, link, page_double_hyphen, doi
 
 app = Flask(__name__)
+
+app.url_map.converters['paper_id'] = PaperIdConverter
 
 
 def customizations(record):
@@ -30,7 +33,7 @@ parser.customization = customizations
 temporary_memory = {}
 
 
-@app.route('/papers/<identifier>', methods=['GET'])
+@app.route('/papers/<paper_id:identifier>', methods=['GET'])
 def get_paper(identifier):
     return jsonify(get_paper_neo4j(identifier))
 
@@ -48,3 +51,10 @@ def post_paper():
     response.headers['location'] = '/papers/' + paper['ID']
     response.autocorrect_location_header = False
     return response
+
+
+@app.route('/references/<paper_id:referee>/<paper_id:referenced>', methods=['POST'])
+def post_reference(referee, referenced):
+    attr_dict = request.get_json()
+    q = insert_reference(referee, referenced, attr_dict)
+    return jsonify(q)
