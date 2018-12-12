@@ -35,10 +35,28 @@ def insert_reference(referee_id, referenced_id, attr_dict):
     attributes = ', '.join([f'{k}:"{attr_dict[k]}"' for k in attr_dict])
     query = f'MATCH (referee:Paper{{ID:"{referee_id}"}}), ' \
             f'(referenced:Paper{{ID:"{referenced_id}"}}) ' \
-            f'CREATE (referee)-[r:CITED {{{attributes}}}]->(referenced) ' \
+            f'CREATE (referee)-[r:REFERENCES {{{attributes}}}]->(referenced) ' \
             'RETURN r'
 
     with DRIVER.session() as session:
         result = session.run(query)
         single_result = result.single()
         return dict(single_result['r'])
+
+
+def get_reference(referee_id, referenced_id):
+    query = f'MATCH (referee:Paper{{ID:"{referee_id}"}})' \
+            f'-[r:REFERENCES]->' \
+            f'(referenced:Paper{{ID:"{referenced_id}"}})' \
+            'RETURN r'
+
+    with DRIVER.session() as session:
+        result = session.run(query)
+        single_result = result.single()
+        return dict(single_result['r'])
+
+
+def search_papers(title):
+    with DRIVER.session() as sess:
+        results = sess.run(f'MATCH (p:Paper) WHERE p.title=~".*{title}.*" RETURN p')
+        return [dict(record['p']) for record in results]

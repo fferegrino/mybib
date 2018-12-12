@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
-from mybib.neo4j import get_paper as get_paper_neo4j, insert_paper as insert_paper_neo4j, insert_reference
+from mybib.neo4j import get_paper as get_paper_neo4j, insert_paper as insert_paper_neo4j, insert_reference, \
+    get_reference as get_reference_neo4j, search_papers as search_papers_neo4j
 from mybib.web.routing.regex_converters import PaperIdConverter
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
@@ -53,8 +54,26 @@ def post_paper():
     return response
 
 
+@app.route("/papers/search", methods=['GET'])
+def search_papers():
+    title = request.args['title']
+    res = search_papers_neo4j(title)
+    return jsonify(res)
+
+
 @app.route('/references/<paper_id:referee>/<paper_id:referenced>', methods=['POST'])
 def post_reference(referee, referenced):
     attr_dict = request.get_json()
-    q = insert_reference(referee, referenced, attr_dict)
-    return jsonify(q)
+    insert_reference(referee, referenced, attr_dict)
+
+    response = jsonify()
+    response.status_code = 201
+    response.headers['location'] = f'/references/{referee}/{referenced}'
+    response.autocorrect_location_header = False
+    return response
+
+
+@app.route('/references/<paper_id:referee>/<paper_id:referenced>', methods=['GET'])
+def get_reference(referee, referenced):
+    reference = get_reference_neo4j(referee, referenced)
+    return jsonify(reference)
