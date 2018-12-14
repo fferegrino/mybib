@@ -62,3 +62,24 @@ def search_papers(title):
     with DRIVER.session() as sess:
         results = sess.run(f'MATCH (p:Paper) WHERE p.title=~".*{title}.*" RETURN p')
         return [dict(record['p']) for record in results]
+
+
+def recent_papers_and_references():
+    nodes = {}
+    references = []
+    with DRIVER.session() as sess:
+        results = sess.run('MATCH (r0:Paper)-[r:REFERENCES]->(r1:Paper) RETURN r0,r,r1 ORDER BY r0._time DESC LIMIT 25')
+        for r00 in results:
+            dictionary = dict(r00)
+            referee = dict(dictionary['r0'])
+            referenced = dict(dictionary['r1'])
+
+            nodes[referee['ID']] = referee
+            nodes[referenced['ID']] = referenced
+
+            reference = dict(dictionary['r'])
+            reference['to'] = referenced['ID']
+            reference['from'] = referee['ID']
+            references.append(reference)
+
+        return list(nodes.values()), references
