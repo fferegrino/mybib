@@ -1,4 +1,5 @@
 from neo4j import GraphDatabase
+from time import time
 import os
 
 URI = os.getenv('NEO4J_URL')
@@ -27,6 +28,7 @@ def insert_paper(attr_dict):
 def _insert_node(label, attr_dict):
     with DRIVER.session() as session:
         query = f'CREATE (x:{label} {{'
+        attr_dict['_time'] = time()
         query += ', '.join([f'{k}:"{attr_dict[k]}"' for k in attr_dict]) + '})'
         return session.run(query)
 
