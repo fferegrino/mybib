@@ -53,7 +53,6 @@ $(document).ready(function() {
 
 
             var updatedIds = nodes.add(newNodes);
-            network.selectNodes([updatedIds[0]]);
         })
     });
 
@@ -85,4 +84,40 @@ $(document).ready(function() {
         }
 
     });
+
+    $('#addEntry').click(function(e) {
+        var entry = $('#entry').val();
+
+        $.ajax({
+            url: "/api/papers",
+            type: "POST",
+            data: entry,
+            contentType: "text/plain",
+            success: function(data) {
+                alert("Inserted!");
+            }
+        })
+
+    });
+
+    $.get('/api/recent', function(data) {
+
+        var newNodes = []
+        for (i = 0; i < data.nodes.length; i++) {
+            paper = data.nodes[i];
+            newNodes.push({
+                "id": paper.ID,
+                "label": paper.title
+            });
+        }
+        var updatedIds = nodes.add(newNodes);
+
+        var newEdges = []
+        for (i = 0; i < data.references.length; i++) {
+            reference = data.references[i];
+            reference.arrows = "to"
+            newEdges.push(reference);
+        }
+        var updatedEdges = edges.add(newEdges);
+    })
 });
