@@ -33,11 +33,14 @@ def get_paper(identifier):
 
 @papers_api.route("/api/papers", methods=['POST'])
 def post_paper():
+    bibtex_text = request.data.decode('utf-8')
+
     parser = BibTexParser()
     parser.customization = customizations
-    bib_database = bibtexparser.loads(request.data.decode('utf-8'), parser=parser)
+    bib_database = bibtexparser.loads(bibtex_text, parser=parser)
     [paper] = bib_database.entries
 
+    paper['_bibtex'] = bibtex_text
     insert_paper_neo4j(paper)
 
     response = jsonify()
