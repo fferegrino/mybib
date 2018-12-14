@@ -28,7 +28,7 @@ def insert_paper(attr_dict):
 def _insert_node(label, attr_dict):
     with DRIVER.session() as session:
         query = f'CREATE (x:{label} {{'
-        attr_dict['_time'] = time()
+        attr_dict['_time'] = int(time())
         query += ', '.join([f'{k}:"{attr_dict[k]}"' for k in attr_dict]) + '})'
         return session.run(query)
 
