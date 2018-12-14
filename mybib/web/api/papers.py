@@ -23,9 +23,6 @@ def customizations(record):
     return record
 
 
-parser = BibTexParser()
-parser.customization = customizations
-
 papers_api = Blueprint('papers_api', __name__)
 
 
@@ -36,7 +33,8 @@ def get_paper(identifier):
 
 @papers_api.route("/api/papers", methods=['POST'])
 def post_paper():
-    print(request.data.decode('utf-8'))
+    parser = BibTexParser()
+    parser.customization = customizations
     bib_database = bibtexparser.loads(request.data.decode('utf-8'), parser=parser)
     [paper] = bib_database.entries
 
