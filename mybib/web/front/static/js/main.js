@@ -1,4 +1,15 @@
 $(document).ready(function() {
+
+    var dict = {};
+    var entryTextArea = $('#entry');
+    var referenceButton = $('#reference');
+    var clearButton = $('#clear');
+    var searchButton = $('#search');
+    var addEntryButton = $('#addEntry');
+
+
+    referenceButton.prop('disabled', true);
+
     // create a network
     // create an array with nodes
     var nodes = new vis.DataSet([]);
@@ -35,9 +46,20 @@ $(document).ready(function() {
     // initialize your network!
     var network = new vis.Network(container, data, options);
 
+    network.on( 'click', function(properties) {
+        var ids = properties.nodes;
+        referenceButton.prop('disabled', true);
+        if(ids.length == 1) {
+            var selectedPaper = dict[ids[0]];
+            entryTextArea.val(selectedPaper._bibtex);
+        }
+        else if (ids.length == 2) {
+            referenceButton.prop('disabled', false);
+        }
+    });
 
-    console.log('Loaded')
-    $("#search").click(function(e) {
+
+    searchButton.click(function(e) {
         serialised_data = $('#form').serialize();
         $.get('api/papers/search?' + serialised_data, function(data) {
 
@@ -45,6 +67,7 @@ $(document).ready(function() {
 
             for (i = 0; i < data.length; i++) {
                 paper = data[i];
+                dict[paper.ID] = paper;
                 newNodes.push({
                     "id": paper.ID,
                     "label": paper.title
@@ -57,7 +80,7 @@ $(document).ready(function() {
     });
 
 
-    $("#reference").click(function(e) {
+    referenceButton.click(function(e) {
         nodes = network.getSelectedNodes();
         if (nodes.length == 2) {
             referee = nodes[0];
@@ -85,8 +108,8 @@ $(document).ready(function() {
 
     });
 
-    $('#addEntry').click(function(e) {
-        var entry = $('#entry').val();
+    addEntryButton.click(function(e) {
+        var entry = entryTextArea.val();
 
         $.ajax({
             url: "/api/papers",
@@ -105,6 +128,7 @@ $(document).ready(function() {
         var newNodes = []
         for (i = 0; i < data.nodes.length; i++) {
             paper = data.nodes[i];
+            dict[paper.ID] = paper;
             newNodes.push({
                 "id": paper.ID,
                 "label": paper.title

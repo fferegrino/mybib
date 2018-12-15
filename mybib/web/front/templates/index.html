@@ -11,26 +11,19 @@
 </head>
 
 <body>
-    <section class="section">
-        <div class="container">
-            <div class="columns">
-                <div class="column is-3">
-                    <form id="form" name="form" method="get">
-                        <input type="text" name="title" id="title" class="textbox" placeholder="Search">
-                        <input title="Search" id="search" value="Search" type="button" class="button">
-                        <input title="Clear" id="clear" value="Clear" type="button" class="button">
-                        <input title="Reference" id="reference" value="Reference" type="button" class="button">
-
-                        <textarea id="entry" cols="40" rows="10"></textarea>
-                        <input title="Add entry" id="addEntry" value="Add entry" type="button" class="button">
-                    </form>
-                </div>
-                <div class="column">
-                    <div id="myNetwork"></div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="column left">
+        <form id="form" name="form" method="get">
+            <input type="text" name="title" id="title" class="textbox full" placeholder="Search">
+            <input title="Search" id="search" value="Search" type="button" class="button half">
+            <input title="Clear" id="clear" value="Clear" type="button" class="button half">
+            <input title="Reference" id="reference" value="Reference" type="button" class="button  full">
+            <textarea id="entry" cols="40"></textarea>
+            <input title="Add entry" id="addEntry" value="Add entry" type="button" class="button full">
+        </form>
+    </div>
+    <div class="column right">
+        <div id="myNetwork"></div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="static/js/main.js"></script>
