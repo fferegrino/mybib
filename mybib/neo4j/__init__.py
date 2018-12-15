@@ -2,9 +2,9 @@ from neo4j import GraphDatabase
 from time import time
 import os
 
-URI = os.getenv('NEO4J_URL')
-USER = os.getenv('NEO4J_USER')
-PASS = os.getenv('NEO4J_PASS')
+URI = os.getenv('GRAPHENEDB_BOLT_URL')
+USER = os.getenv('GRAPHENEDB_BOLT_USER')
+PASS = os.getenv('GRAPHENEDB_BOLT_PASSWORD')
 DRIVER = GraphDatabase.driver(URI, auth=(USER, PASS))
 
 

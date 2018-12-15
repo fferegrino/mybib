@@ -7,9 +7,9 @@ name = "pypi"
 bibtexparser = "*"
 flask = "*"
 "neo4j-driver" = "*"
+gunicorn = "*"
 
 [dev-packages]
-jupyter = "*"
 
 [requires]
 python_version = "3.7"

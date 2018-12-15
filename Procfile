@@ -1,0 +1,1 @@
+web: gunicorn  --chdir mybib/web app:app
