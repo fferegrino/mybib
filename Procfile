@@ -1,0 +1,1 @@
+web: gunicorn mybib/web app:app
