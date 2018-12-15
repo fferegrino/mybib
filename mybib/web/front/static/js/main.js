@@ -120,6 +120,17 @@ $(document).ready(function() {
 
     });
 
+    clearButton.click(function(e){
+        edges.clear();
+        nodes.clear();
+        for (var prop in currentVisibleNodes) {
+            if (currentVisibleNodes.hasOwnProperty(prop)) {
+                delete currentVisibleNodes[prop];
+            }
+        }
+
+    });
+
     addEntryButton.click(function(e) {
         var entry = entryTextArea.val();
 
