@@ -1,5 +1,6 @@
 from functools import wraps
 from flask import request, Response
+import os
 
 
 def check_auth(username, password):
@@ -7,7 +8,7 @@ def check_auth(username, password):
     password combination is valid.
     """
     print(username, password)
-    return username == 'fferegrino' and password == 'secret'
+    return username == os.getenv('MYBIB_USER') and password == os.getenv('MYBIB_PASS')
 
 
 def authenticate():
