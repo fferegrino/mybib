@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 from mybib.neo4j import insert_reference, get_reference as get_reference_neo4j
+from mybib.web.authentication import requires_auth
 
 references_api = Blueprint('references_api', __name__)
 
 
 @references_api.route('/api/references/<paper_id:referee>/<paper_id:referenced>', methods=['POST'])
+@requires_auth
 def post_reference(referee, referenced):
     attr_dict = request.get_json()
     insert_reference(referee, referenced, attr_dict)

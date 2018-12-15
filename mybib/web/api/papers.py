@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from mybib.neo4j import get_paper as get_paper_neo4j, insert_paper as insert_paper_neo4j, search_papers as search_papers_neo4j
+from mybib.web.authentication import requires_auth
 
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
@@ -32,6 +33,7 @@ def get_paper(identifier):
 
 
 @papers_api.route("/api/papers", methods=['POST'])
+@requires_auth
 def post_paper():
     bibtex_text = request.data.decode('utf-8')
 

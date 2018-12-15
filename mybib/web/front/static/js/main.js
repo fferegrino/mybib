@@ -2,10 +2,18 @@ $(document).ready(function() {
 
     var dict = {};
     var entryTextArea = $('#entry');
+    var userText = $('#user');
+    var passwordText = $('#password');
     var referenceButton = $('#reference');
     var clearButton = $('#clear');
     var searchButton = $('#search');
     var addEntryButton = $('#addEntry');
+
+
+
+    function setAuth(xhr) {
+        xhr.setRequestHeader ("Authorization", "Basic " + btoa(userText.val() + ":" + passwordText.val()));
+    }
 
 
     referenceButton.prop('disabled', true);
@@ -95,6 +103,7 @@ $(document).ready(function() {
             $.ajax({
                 url: url,
                 type: "POST",
+                beforeSend:setAuth,
                 data: JSON.stringify(content),
                 contentType: "application/json",
                 success: function(result) {
@@ -114,6 +123,7 @@ $(document).ready(function() {
         $.ajax({
             url: "/api/papers",
             type: "POST",
+            beforeSend:setAuth,
             data: entry,
             contentType: "text/plain",
             success: function(data) {
