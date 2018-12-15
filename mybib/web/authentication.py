@@ -8,7 +8,7 @@ def check_auth(username, password):
     password combination is valid.
     """
     print(username, password)
-    return username == os.getenv('MYBIB_USER') and password == os.getenv('MYBIB_PASS')
+    return username == os.getenv('MYBIB_USER') and password == os.getenv('MYBIB_PASSWORD')
 
 
 def authenticate():

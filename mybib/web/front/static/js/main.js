@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-    var dict = {};
+    var currentVisibleNodes = {};
     var entryTextArea = $('#entry');
     var userText = $('#user');
     var passwordText = $('#password');
@@ -58,7 +58,7 @@ $(document).ready(function() {
         var ids = properties.nodes;
         referenceButton.prop('disabled', true);
         if(ids.length == 1) {
-            var selectedPaper = dict[ids[0]];
+            var selectedPaper = currentVisibleNodes[ids[0]];
             entryTextArea.val(selectedPaper._bibtex);
         }
         else if (ids.length == 2) {
@@ -75,7 +75,10 @@ $(document).ready(function() {
 
             for (i = 0; i < data.length; i++) {
                 paper = data[i];
-                dict[paper.ID] = paper;
+                if(paper.ID in currentVisibleNodes) {
+                    continue;
+                }
+                currentVisibleNodes[paper.ID] = paper;
                 newNodes.push({
                     "id": paper.ID,
                     "label": paper.title
@@ -138,7 +141,7 @@ $(document).ready(function() {
         var newNodes = []
         for (i = 0; i < data.nodes.length; i++) {
             paper = data.nodes[i];
-            dict[paper.ID] = paper;
+            currentVisibleNodes[paper.ID] = paper;
             newNodes.push({
                 "id": paper.ID,
                 "label": paper.title
