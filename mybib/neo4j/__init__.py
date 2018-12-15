@@ -68,18 +68,22 @@ def recent_papers_and_references():
     nodes = {}
     references = []
     with DRIVER.session() as sess:
-        results = sess.run('MATCH (r0:Paper)-[r:REFERENCES]->(r1:Paper) RETURN r0,r,r1 ORDER BY r0._time DESC LIMIT 25')
+        results = sess.run('MATCH (referee:Paper) '
+                           'OPTIONAL MATCH (referee)-[reference:REFERENCES]->(referenced:Paper) '
+                           'RETURN referee,reference,referenced ORDER BY referee._time DESC LIMIT 25')
         for r00 in results:
             dictionary = dict(r00)
-            referee = dict(dictionary['r0'])
-            referenced = dict(dictionary['r1'])
-
+            referee = dict(dictionary['referee'])
             nodes[referee['ID']] = referee
-            nodes[referenced['ID']] = referenced
 
-            reference = dict(dictionary['r'])
-            reference['to'] = referenced['ID']
-            reference['from'] = referee['ID']
-            references.append(reference)
+            referenced = dictionary.get('referenced')
+            if referenced:
+                referenced = dict(referenced)
+                nodes[referenced['ID']] = referenced
+
+                reference = dict(dictionary['reference'])
+                reference['to'] = referenced['ID']
+                reference['from'] = referee['ID']
+                references.append(reference)
 
         return list(nodes.values()), references
