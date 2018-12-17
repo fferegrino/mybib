@@ -1,28 +1,9 @@
 from flask import Blueprint, request, jsonify
-from mybib.neo4j import get_paper as get_paper_neo4j, insert_paper as insert_paper_neo4j, search_papers as search_papers_neo4j
+
+from mybib.bibtext import load_from_string
+from mybib.neo4j import get_paper as get_paper_neo4j, insert_paper as insert_paper_neo4j, \
+    search_papers as search_papers_neo4j
 from mybib.web.authentication import requires_auth
-
-import bibtexparser
-from bibtexparser.bparser import BibTexParser
-from bibtexparser.customization import author, editor, journal, keyword, link, page_double_hyphen, doi
-
-
-def customizations(record):
-    """Use some functions delivered by the library
-
-    :param record: a record
-    :returns: -- customized record
-    """
-    # record = type(record)
-    record = author(record)
-    record = editor(record)
-    record = journal(record)
-    record = keyword(record)
-    record = link(record)
-    record = page_double_hyphen(record)
-    record = doi(record)
-    return record
-
 
 papers_api = Blueprint('papers_api', __name__)
 
@@ -36,10 +17,7 @@ def get_paper(identifier):
 @requires_auth
 def post_paper():
     bibtex_text = request.data.decode('utf-8')
-
-    parser = BibTexParser()
-    parser.customization = customizations
-    bib_database = bibtexparser.loads(bibtex_text, parser=parser)
+    bib_database = load_from_string(bibtex_text)
     [paper] = bib_database.entries
 
     paper['_bibtex'] = bibtex_text
