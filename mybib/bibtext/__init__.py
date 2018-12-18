@@ -2,7 +2,8 @@ import re
 
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
-from bibtexparser.customization import type as bibtextparser_type, author, editor, journal, link, page_double_hyphen, doi
+from bibtexparser.customization import type as bibtextparser_type, author, editor, journal, link, page_double_hyphen, \
+    doi
 
 
 def _split_by(text, separator=',|;'):
@@ -46,5 +47,6 @@ def get_parser():
     parser.customization = _customize
     return parser
 
+
 def load_from_string(bibtex_text):
-    return bibtexparser.loads(bibtex_text, parser=get_parser())
+    return bibtexparser.loads(bibtex_text, parser=get_parser()).entries

@@ -17,8 +17,7 @@ def get_paper(identifier):
 @requires_auth
 def post_paper():
     bibtex_text = request.data.decode('utf-8')
-    bib_database = load_from_string(bibtex_text)
-    [paper] = bib_database.entries
+    [paper] = load_from_string(bibtex_text)
 
     paper['_bibtex'] = bibtex_text
     insert_paper_neo4j(paper)
