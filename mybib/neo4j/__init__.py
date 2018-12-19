@@ -6,8 +6,12 @@ from neo4j import GraphDatabase
 URI = os.getenv('GRAPHENEDB_BOLT_URL')
 USER = os.getenv('GRAPHENEDB_BOLT_USER')
 PASS = os.getenv('GRAPHENEDB_BOLT_PASSWORD')
-DRIVER = GraphDatabase.driver(URI, auth=(USER, PASS))
+DRIVER = None
 
+
+def init_driver():
+    global DRIVER
+    DRIVER = GraphDatabase.driver(URI, auth=(USER, PASS))
 
 
 EXPECTED_INDEXES = {
