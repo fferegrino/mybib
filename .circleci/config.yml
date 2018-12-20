@@ -20,7 +20,7 @@ jobs:
           - v2-dependencies-{{ checksum "Pipfile.lock" }}
 
       - run:
-          name: install dependencies
+          name: Install dependencies
           command: |
             pipenv install --dev
 
@@ -30,9 +30,9 @@ jobs:
           key: v2-dependencies-{{ checksum "Pipfile.lock" }}
 
       - run:
-          name: run tests
+          name: Running tests
           command: |
-            pipenv run pytest --cov=mybib --cov-report html:covhtml test/
+            pipenv run pytest --cov=mybib --cov-report html:htmlcov test/
 
       - store_artifacts:
           path: htmlcov/
