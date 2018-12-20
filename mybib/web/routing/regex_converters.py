@@ -7,7 +7,7 @@ class RegexConverter(BaseConverter):
         self.regex = items[0]
 
 
-PAPER_ID_REGEX = '[a-zA-Z0-9:\.]+'
+PAPER_ID_REGEX = r'[a-zA-Z0-9:\.]+'
 
 
 class PaperIdConverter(RegexConverter):
