@@ -17,7 +17,6 @@ def init_driver():
 
 Index = namedtuple('Index', ['node', 'field'])
 
-
 EXPECTED_INDEXES = [
     Index('Keyword', 'value'),
     Index('Paper', 'ID'),
@@ -47,6 +46,16 @@ def _get_node(label, identifier):
 
 def insert_paper(attr_dict):
     return _insert_node('Paper', attr_dict)
+
+
+def insert_author(name):
+    author_dict = {'name': name}
+    return _insert_node('Author', author_dict)
+
+
+def insert_keyword(keyword):
+    keyword_dict = {'value': keyword}
+    return _insert_node('Keyword', keyword_dict)
 
 
 def _insert_node(label, attr_dict):
