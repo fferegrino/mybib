@@ -1,10 +1,5 @@
-import base64
 import json
 from unittest.mock import patch, Mock
-
-import pytest
-
-from mybib.web.app import app
 
 validate_indexes = Mock()
 
@@ -21,16 +16,15 @@ def test_get_two_identifiers(client):
 
 
 @patch('mybib.web.api.references.insert_reference')
-def test_post(insert_reference_mock, client):
+def test_post(insert_reference_mock, client, auth_header):
     id1 = 'id1'
     id2 = 'id2'
     expected = {'a': 'reference'}
     with patch('mybib.web.authentication.check_auth') as check_auth:
         check_auth.return_value = True
 
-        valid_credentials = base64.b64encode(b'testuser:testpassword').decode('utf-8')
         response = client.post(f'/api/references/{id1}/{id2}', data=json.dumps(expected),
-                               headers={'Authorization': 'Basic ' + valid_credentials},
+                               headers=auth_header,
                                content_type='application/json')
 
         assert response.status_code == 201

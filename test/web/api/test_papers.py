@@ -29,7 +29,7 @@ def test_get_search(client, sample_json):
 
 @patch('mybib.web.api.papers.insert_paper_neo4j')
 @patch('mybib.web.api.papers.load_from_string')
-def test_post(load_from_string_mock, insert_paper_neo4j_mock, client, sample_bibtex, sample_json):
+def test_post(load_from_string_mock, insert_paper_neo4j_mock, client, sample_bibtex, sample_json, auth_header):
     load_from_string_mock.return_value = sample_json
     with patch('mybib.web.authentication.check_auth') as check_auth:
         check_auth.return_value = True
@@ -37,9 +37,7 @@ def test_post(load_from_string_mock, insert_paper_neo4j_mock, client, sample_bib
         inserted_paper = entries[0]
         inserted_paper['_bibtex'] = sample_bibtex
 
-        valid_credentials = base64.b64encode(b'testuser:testpassword').decode('utf-8')
-        response = client.post('/api/papers', data=sample_bibtex,
-                               headers={'Authorization': 'Basic ' + valid_credentials})
+        response = client.post('/api/papers', data=sample_bibtex, headers=auth_header)
 
         load_from_string_mock.assert_called_with(sample_bibtex)
         insert_paper_neo4j_mock.assert_called_with(inserted_paper)
