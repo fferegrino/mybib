@@ -1,4 +1,5 @@
 import os
+from collections import namedtuple
 from time import time
 
 from neo4j import GraphDatabase
@@ -14,23 +15,21 @@ def init_driver():
     DRIVER = GraphDatabase.driver(URI, auth=(USER, PASS))
 
 
-EXPECTED_INDEXES = {
-    ('Keyword', 'value'),
-    ('Paper', 'ID'),
-    ('Author', 'name'),
-    ('Investigation', 'title'),
-}
+Index = namedtuple('Index', ['node', 'field'])
+
+
+EXPECTED_INDEXES = [
+    Index('Keyword', 'value'),
+    Index('Paper', 'ID'),
+    Index('Author', 'name'),
+    Index('Investigation', 'title'),
+]
 
 
 def validate_indexes():
     with DRIVER.session() as session:
-        results = session.run('CALL db.indexes();')
-        for result in results:
-            [node] = result['tokenNames']
-            [property_] = result['properties']
-            EXPECTED_INDEXES.remove((node, property_))
         for index in EXPECTED_INDEXES:
-            session.run(f'CREATE INDEX ON :{index[0]}({index[1]})')
+            session.run(f'CREATE INDEX ON :{index.node}({index.field})')
 
 
 def get_paper(identifier):

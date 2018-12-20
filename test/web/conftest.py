@@ -1,3 +1,4 @@
+import base64
 from unittest.mock import patch
 
 import pytest
@@ -18,6 +19,12 @@ def patch_neo4j(request):
         validate_indexes.__exit__()
 
     request.addfinalizer(unpatch)
+
+
+@pytest.fixture
+def auth_header():
+    valid_credentials = base64.b64encode(b'testuser:testpassword').decode('utf-8')
+    return {'Authorization': 'Basic ' + valid_credentials}
 
 
 @pytest.fixture
