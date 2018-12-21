@@ -49,7 +49,7 @@ def _get_authors(record):
         record["authors"] = getnames([i.strip() for i in author.replace('\n', ' ').split(" and ")])
     else:
         record['authors'] = []
-        
+
     return record
 
 

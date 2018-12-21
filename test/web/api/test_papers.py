@@ -30,7 +30,11 @@ def test_get_search(client, json_multiple_authors):
 @patch('mybib.web.api.papers.load_from_string')
 @patch('mybib.web.api.papers.insert_author_neo4j')
 @patch('mybib.web.api.papers.insert_kw_neo4j')
-def test_post(insert_kw_neo4j,
+@patch('mybib.web.api.papers.insert_author_paper_reference')
+@patch('mybib.web.api.papers.insert_keyword_paper_reference')
+def test_post(insert_keyword_paper_reference,
+              insert_author_paper_reference,
+              insert_kw_neo4j,
               insert_author_neo4j,
               load_from_string_mock,
               insert_paper_neo4j_mock,
@@ -54,4 +58,7 @@ def test_post(insert_kw_neo4j,
 
         assert len(insert_kw_neo4j.mock_calls) == len(keywords)
         assert len(insert_author_neo4j.mock_calls) == len(authors)
+
+        assert len(insert_keyword_paper_reference.mock_calls) == len(keywords)
+        assert len(insert_author_paper_reference.mock_calls) == len(authors)
         assert response.status_code == 201

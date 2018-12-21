@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 
 from mybib.bibtext import load_from_string
 from mybib.neo4j import get_paper as get_paper_neo4j, insert_paper as insert_paper_neo4j, \
-    search_papers as search_papers_neo4j, insert_author as insert_author_neo4j, insert_keyword as insert_kw_neo4j
+    search_papers as search_papers_neo4j, insert_author as insert_author_neo4j, insert_keyword as insert_kw_neo4j, insert_keyword_paper_reference, insert_author_paper_reference
 from mybib.web.authentication import requires_auth
 
 papers_api = Blueprint('papers_api', __name__)
@@ -29,8 +29,13 @@ def post_paper():
     for author in authors:
         insert_author_neo4j(author)
 
-
     insert_paper_neo4j(paper)
+
+    for keyword in keywords:
+        insert_keyword_paper_reference(paper['ID'], keyword)
+
+    for author in authors:
+        insert_author_paper_reference(paper['ID'], author)
 
     response = jsonify()
     response.status_code = 201

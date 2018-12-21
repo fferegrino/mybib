@@ -2,7 +2,7 @@ from copy import deepcopy
 from unittest.mock import patch, MagicMock
 
 from mybib.neo4j import validate_indexes, EXPECTED_INDEXES, insert_reference, insert_paper, insert_keyword, \
-    insert_author
+    insert_author, insert_author_paper_reference, insert_keyword_paper_reference
 
 
 def mock_run(mock_driver):
@@ -53,6 +53,32 @@ def test_insert_reference(mock_driver):
                                f'CREATE (referee)-[r:REFERENCES {{{attributes}}}]->(referenced) ' \
                                'RETURN r'
     assert actual_insertion_return == expected_insertion_return
+
+
+@patch('mybib.neo4j.DRIVER')
+def test_insert_author_paper_reference(mock_driver):
+    run_mock, enter_mock, context_mgr_mock, session_mock = mock_run(mock_driver)
+
+    insert_author_paper_reference('id1', 'Cosme Fulanito')
+    [match_call] = enter_mock.mock_calls
+
+    assert match_call[0] == 'run'
+    assert match_call[1][0] == 'MATCH (paper:Paper{ID:"id1"}), ' \
+                               '(author:Author{name:"Cosme Fulanito"}) ' \
+                               f'CREATE (author)-[r:WROTE]->(paper) '
+
+
+@patch('mybib.neo4j.DRIVER')
+def test_insert_keyword_paper_reference(mock_driver):
+    run_mock, enter_mock, context_mgr_mock, session_mock = mock_run(mock_driver)
+
+    insert_keyword_paper_reference('id1', 'neo4j')
+    [match_call] = enter_mock.mock_calls
+
+    assert match_call[0] == 'run'
+    assert match_call[1][0] == 'MATCH (paper:Paper{ID:"id1"}), ' \
+                               '(kw:Keyword{value:"neo4j"}) ' \
+                               f'CREATE (paper)-[r:HAS_KEYWORD]->(kw) '
 
 
 @patch('mybib.neo4j.DRIVER')

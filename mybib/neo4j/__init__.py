@@ -79,6 +79,22 @@ def insert_reference(referee_id, referenced_id, attr_dict):
         return dict(single_result['r'])
 
 
+def insert_keyword_paper_reference(paper_id, keyword):
+    query = f'MATCH (paper:Paper{{ID:"{paper_id}"}}), ' \
+            f'(kw:Keyword{{value:"{keyword}"}}) ' \
+            f'CREATE (paper)-[r:HAS_KEYWORD]->(kw) '
+    with DRIVER.session() as session:
+        session.run(query)
+
+
+def insert_author_paper_reference(paper_id, name):
+    query = f'MATCH (paper:Paper{{ID:"{paper_id}"}}), ' \
+            f'(author:Author{{name:"{name}"}}) ' \
+            f'CREATE (author)-[r:WROTE]->(paper) '
+    with DRIVER.session() as session:
+        session.run(query)
+
+
 def get_reference(referee_id, referenced_id):
     query = f'MATCH (referee:Paper{{ID:"{referee_id}"}})' \
             f'-[r:REFERENCES]->' \
