@@ -1,5 +1,7 @@
 from flask import Flask
+from flask_graphql import GraphQLView
 
+from mybib.graphql import schemas
 from mybib.neo4j.models import init_graph
 from mybib.web.api.papers import papers_api
 from mybib.web.api.references import references_api
@@ -17,4 +19,9 @@ app.register_blueprint(references_api)
 
 if __name__ == '__main__':
     init_graph()
+
+    app.add_url_rule('/graphql', view_func=GraphQLView.as_view(
+        'graphql', schema=schemas.schema, graphiql=True)
+    )
+
     app.run()

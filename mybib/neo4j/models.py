@@ -27,9 +27,8 @@ class BaseModel(GraphObject):
             else:
                 self.__other_properties_dict[key] = value
 
-    @property
     def all(self):
-        return self.select(graph)
+        return self.match(graph)
 
     def save(self):
         graph.push(self)
@@ -109,7 +108,7 @@ class Paper(BaseModel):
     def fetch_references(self):
         return [{
             **proj[0].asdict(),
-            **proj[1]
+            #**proj[1] # Reference properties
         } for proj in self.references._related_objects]
 
 
