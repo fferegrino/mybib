@@ -3,23 +3,22 @@ import os
 from py2neo import Graph
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 
-graph = Graph(
-    host=os.getenv('NEO4J_HOST_URL'),
-    user=os.getenv('NEO4J_USER'),
-    password=os.getenv('NEO4J_PASS'),
-    port=os.getenv('NEO4J_PORT'),
-)
+graph: Graph = None
+
+
+def init_graph():
+    global graph
+    graph = Graph(
+        host=os.getenv('NEO4J_HOST_URL'),
+        user=os.getenv('NEO4J_USER'),
+        password=os.getenv('NEO4J_PASS'),
+        port=os.getenv('NEO4J_PORT'),
+    )
 
 
 class BaseModel(GraphObject):
-    """
-    Implements some basic functions to guarantee some standard functionality
-    across all models. The main purpose here is also to compensate for some
-    missing basic features that we expected from GraphObjects, and improve the
-    way we interact with them.
-    """
-
     __other_properties_dict = dict()
+    _time = Property()
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -47,7 +46,6 @@ class Paper(BaseModel):
     isbn = Property()
     link = Property()
     _bibtex = Property()
-    _time = Property()
     numpages = Property()
     url = Property()
     pages = Property()
@@ -61,7 +59,9 @@ class Paper(BaseModel):
     authors = RelatedFrom('Author', 'WROTE')
     keywords = RelatedTo('Keyword', 'HAS_KEYWORD')
     projects = RelatedTo('Project', 'PART_OF')
+
     references = RelatedTo('Paper', 'REFERENCES')
+    referenced_by = RelatedFrom('Paper', 'REFERENCES')
 
     def asdict(self):
         return {
@@ -114,7 +114,7 @@ class Paper(BaseModel):
 
 
 class Author(BaseModel):
-    __primerykey__ = 'name'
+    __primarykey__ = 'name'
     name = Property()
 
     papers = RelatedTo('Paper', 'WROTE')
@@ -129,7 +129,7 @@ class Author(BaseModel):
 
 
 class Keyword(BaseModel):
-    __primerykey__ = 'value'
+    __primarykey__ = 'value'
     value = Property()
 
     papers = RelatedFrom('Paper', 'HAS_KEYWORD')
@@ -144,7 +144,7 @@ class Keyword(BaseModel):
 
 
 class Project(BaseModel):
-    __primerykey__ = 'name'
+    __primarykey__ = 'name'
     name = Property()
 
     papers = RelatedTo('Paper', 'PART_OF')

@@ -4,14 +4,6 @@ from unittest.mock import patch, Mock, MagicMock
 validate_indexes = Mock()
 
 
-def test_get_identifier(client):
-    pass
-
-
-def test_get_search(client, json_multiple_authors):
-    pass
-
-
 @patch('mybib.web.api.papers.Paper', autospec=True)
 @patch('mybib.web.api.papers.Author', autospec=True)
 @patch('mybib.web.api.papers.Keyword', autospec=True)
@@ -38,8 +30,8 @@ def test_post(keyword_mock, author_mock, paper_mock, client, bibtex_multiple_aut
 
         response = client.post('/api/papers', data=bibtex_multiple_authors, headers=auth_header)
 
-        assert len(keyword_mock.mock_calls) == len(keywords) * 2
-        assert len(author_mock.mock_calls) == len(authors) * 2
+        assert len(keyword_mock.mock_calls) == len(keywords) * 3
+        assert len(author_mock.mock_calls) == len(authors) * 3
         paper_mock.assert_called_once_with(**inserted_paper)
         fake_paper.save.assert_called()
         assert response.status_code == 201

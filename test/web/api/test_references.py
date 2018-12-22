@@ -1,5 +1,5 @@
 import json
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, MagicMock
 
 validate_indexes = Mock()
 
@@ -10,7 +10,12 @@ def test_get_two_identifiers(client):
     expected = {'a': 'reference'}
 
 
-def test_post( client, auth_header):
+@patch('mybib.web.api.references.Paper.fetch', autospec=True)
+def test_post(fetch_mock, client, auth_header):
+    referee_mock = MagicMock()
+    referenced_mock = MagicMock()
+    fetch_mock.side_effect = [referee_mock, referenced_mock]
+
     id1 = 'id1'
     id2 = 'id2'
     expected = {'a': 'reference'}
@@ -21,4 +26,5 @@ def test_post( client, auth_header):
                                headers=auth_header,
                                content_type='application/json')
 
+        referee_mock.references.add.assert_called_once_with(referenced_mock, expected)
         assert response.status_code == 201
