@@ -27,9 +27,8 @@ class BaseModel(GraphObject):
             else:
                 self.__other_properties_dict[key] = value
 
-    @property
     def all(self):
-        return self.select(graph)
+        return self.match(graph)
 
     def save(self):
         graph.push(self)

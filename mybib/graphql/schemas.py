@@ -59,9 +59,14 @@ class PaperSchema(MyBibSchema):
 class Query(graphene.ObjectType):
     paper = graphene.Field(lambda: PaperSchema, ID=graphene.String())
 
+    papers = graphene.List(lambda: PaperSchema)
+
     def resolve_paper(self, info, ID):
         customer = Paper(ID=ID).fetch()
         return PaperSchema(**customer.asdict())
+
+    def resolve_papers(self, info):
+        return [PaperSchema(**paper.asdict()) for paper in Paper().all()]
 
 
 schema = graphene.Schema(query=Query, auto_camelcase=False)
