@@ -54,7 +54,6 @@ class Paper(BaseModel):
     publisher = Property()
     location = Property()
     booktitle = Property()
-    message = Property()
     doi = Property()
 
     authors = RelatedFrom('Author', 'WROTE')
@@ -110,7 +109,7 @@ class Paper(BaseModel):
     def fetch_references(self):
         return [{
             **proj[0].asdict(),
-            **proj[1]
+            #**proj[1] # Reference properties
         } for proj in self.references._related_objects]
 
 

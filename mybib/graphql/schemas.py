@@ -34,7 +34,6 @@ class PaperSchema(MyBibSchema):
     series = graphene.String()
     ENTRYTYPE = graphene.String()
     publisher = graphene.String()
-    message = graphene.String()
     location = graphene.String()
     booktitle = graphene.String()
     doi = graphene.String()
