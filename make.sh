@@ -7,10 +7,9 @@ notebooks ()
     $RUN_IN_PIPENV jupyter notebook
 }
 
-app ()
-{
-    export FLASK_APP=mybib/web/app.py
-    $RUN_IN_PIPENV flask run
+app () {
+    export PYTHONPATH=$PWD
+    $RUN_IN_PIPENV python mybib/web/app.py
 }
 
 "$@"

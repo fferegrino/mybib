@@ -17,7 +17,6 @@ def init_driver():
 
 Index = namedtuple('Index', ['node', 'field'])
 
-
 EXPECTED_INDEXES = [
     Index('Keyword', 'value'),
     Index('Paper', 'ID'),
@@ -49,6 +48,16 @@ def insert_paper(attr_dict):
     return _insert_node('Paper', attr_dict)
 
 
+def insert_author(name):
+    author_dict = {'name': name}
+    return _insert_node('Author', author_dict)
+
+
+def insert_keyword(keyword):
+    keyword_dict = {'value': keyword}
+    return _insert_node('Keyword', keyword_dict)
+
+
 def _insert_node(label, attr_dict):
     with DRIVER.session() as session:
         query = f'CREATE (x:{label} {{'
@@ -68,6 +77,22 @@ def insert_reference(referee_id, referenced_id, attr_dict):
         result = session.run(query)
         single_result = result.single()
         return dict(single_result['r'])
+
+
+def insert_keyword_paper_reference(paper_id, keyword):
+    query = f'MATCH (paper:Paper{{ID:"{paper_id}"}}), ' \
+            f'(kw:Keyword{{value:"{keyword}"}}) ' \
+            f'CREATE (paper)-[r:HAS_KEYWORD]->(kw) '
+    with DRIVER.session() as session:
+        session.run(query)
+
+
+def insert_author_paper_reference(paper_id, name):
+    query = f'MATCH (paper:Paper{{ID:"{paper_id}"}}), ' \
+            f'(author:Author{{name:"{name}"}}) ' \
+            f'CREATE (author)-[r:WROTE]->(paper) '
+    with DRIVER.session() as session:
+        session.run(query)
 
 
 def get_reference(referee_id, referenced_id):
