@@ -7,16 +7,16 @@ class MyBibSchema(graphene.ObjectType):
     _time = graphene.Float()
 
 
-#class KeywordSchema(MyBibSchema):
-#    value = graphene.String()
-#
-#
-#class AuthorSchema(MyBibSchema):
-#    name = graphene.String()
-#
-#
-#class ProjectSchema(MyBibSchema):
-#    name = graphene.String()
+class AuthorSchema(MyBibSchema):
+    name = graphene.String()
+
+
+class KeywordSchema(MyBibSchema):
+    value = graphene.String()
+
+
+class ProjectSchema(MyBibSchema):
+    name = graphene.String()
 
 
 class PaperSchema(MyBibSchema):
@@ -34,16 +34,27 @@ class PaperSchema(MyBibSchema):
     series = graphene.String()
     ENTRYTYPE = graphene.String()
     publisher = graphene.String()
+    message = graphene.String()
     location = graphene.String()
     booktitle = graphene.String()
     doi = graphene.String()
 
-    #authors = graphene.List(AuthorSchema)
-    #keywords = graphene.List(KeywordSchema)
-    #projects = graphene.List(ProjectSchema)
+    authors = graphene.List(AuthorSchema)
+    keywords = graphene.List(KeywordSchema)
+    projects = graphene.List(ProjectSchema)
+    references = graphene.List(lambda: PaperSchema)
 
-    #def resolve_authors(self, info):
-    #    return [AuthorSchema(**author) for author in Paper(ID=self.ID).fetch().fetch_authors()]
+    def resolve_authors(self, info):
+        return [AuthorSchema(**author) for author in Paper(ID=self.ID).fetch().fetch_authors()]
+
+    def resolve_keywords(self, info):
+        return [KeywordSchema(**keyword) for keyword in Paper(ID=self.ID).fetch().fetch_keywords()]
+
+    def resolve_projects(self, info):
+        return [ProjectSchema(**project) for project in Paper(ID=self.ID).fetch().fetch_projects()]
+
+    def resolve_references(self, info):
+        return [PaperSchema(**paper) for paper in Paper(ID=self.ID).fetch().fetch_references()]
 
 
 class Query(graphene.ObjectType):

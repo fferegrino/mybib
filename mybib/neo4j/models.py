@@ -54,6 +54,7 @@ class Paper(BaseModel):
     publisher = Property()
     location = Property()
     booktitle = Property()
+    message = Property()
     doi = Property()
 
     authors = RelatedFrom('Author', 'WROTE')
