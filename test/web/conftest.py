@@ -6,18 +6,21 @@ import pytest
 from mybib.web.app import app
 
 
-
 @pytest.fixture(scope="session", autouse=True)
-def patch_neo4j(request):
-    init_driver = patch('mybib.web.app.init_driver')
+def patch_py2neo(request):
+    init_driver = patch('mybib.web.app.init_graph')
     init_driver.__enter__()
-
-    validate_indexes = patch('mybib.web.app.validate_indexes')
-    validate_indexes.__enter__()
 
     def unpatch():
         init_driver.__exit__()
-        validate_indexes.__exit__()
+
+    request.addfinalizer(unpatch)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def patch_neo4j(request):
+    def unpatch():
+        pass
 
     request.addfinalizer(unpatch)
 

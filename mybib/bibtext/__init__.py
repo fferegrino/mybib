@@ -2,8 +2,8 @@ import re
 
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
-from bibtexparser.customization import type as bibtextparser_type, author, editor, journal, link, page_double_hyphen, \
-    doi, getnames
+from bibtexparser.customization import type as bibtextparser_type, editor, journal, page_double_hyphen, \
+    getnames
 
 
 def _split_by(text, separator=',|;'):
@@ -59,9 +59,7 @@ def _customize(record):
     record = editor(record)
     record = journal(record)
     record = _get_keywords(record)
-    record = link(record)
     record = page_double_hyphen(record)
-    record = doi(record)
     return record
 
 

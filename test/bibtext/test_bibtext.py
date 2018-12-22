@@ -1,6 +1,3 @@
-import pytest
-
-
 from mybib.bibtext import load_from_string
 
 
