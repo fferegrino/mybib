@@ -1,6 +1,5 @@
 from flask import Flask
 
-from mybib.neo4j import validate_indexes, init_driver
 from mybib.web.api.papers import papers_api
 from mybib.web.api.references import references_api
 from mybib.web.api.root import root_api
@@ -16,6 +15,4 @@ app.register_blueprint(papers_api)
 app.register_blueprint(references_api)
 
 if __name__ == '__main__':
-    init_driver()
-    validate_indexes()
     app.run()

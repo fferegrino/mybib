@@ -50,12 +50,6 @@ def json_multiple_authors():
         ],
         "ENTRYTYPE": "inproceedings",
         "ID": "Petrovski:2017:EAP:3106426.3106449",
-        "link": [
-            {
-                "url": "http://dx.doi.org/10.1145/3106426.3106449",
-                "anchor": "doi"
-            }
-        ]
     }]
 
 
@@ -107,12 +101,6 @@ def json_single_author():
         ],
         "ENTRYTYPE": "inproceedings",
         "ID": "Petrovski:2017:EAP:3106426.3106449",
-        "link": [
-            {
-                "url": "http://dx.doi.org/10.1145/3106426.3106449",
-                "anchor": "doi"
-            }
-        ]
     }]
 
 
@@ -158,10 +146,4 @@ def json_no_keywords():
         ],
         "ENTRYTYPE": "inproceedings",
         "ID": "Petrovski:2017:EAP:3106426.3106449",
-        "link": [
-            {
-                "url": "http://dx.doi.org/10.1145/3106426.3106449",
-                "anchor": "doi"
-            }
-        ]
     }]

@@ -1,8 +1,7 @@
 from flask import Blueprint, request, jsonify
 
 from mybib.bibtext import load_from_string
-from mybib.neo4j import get_paper as get_paper_neo4j, insert_paper as insert_paper_neo4j, \
-    search_papers as search_papers_neo4j, insert_author as insert_author_neo4j, insert_keyword as insert_kw_neo4j, insert_keyword_paper_reference, insert_author_paper_reference
+from mybib.neo4j.models import Paper, Keyword, Author
 from mybib.web.authentication import requires_auth
 
 papers_api = Blueprint('papers_api', __name__)
@@ -10,7 +9,8 @@ papers_api = Blueprint('papers_api', __name__)
 
 @papers_api.route('/api/papers/<paper_id:identifier>', methods=['GET'])
 def get_paper(identifier):
-    return jsonify(get_paper_neo4j(identifier))
+    paper = Paper(ID=identifier).fetch()
+    return jsonify(paper.asdict())
 
 
 @papers_api.route("/api/papers", methods=['POST'])
@@ -20,22 +20,16 @@ def post_paper():
     [paper] = load_from_string(bibtex_text)
 
     paper['_bibtex'] = bibtex_text
-
     keywords = paper.pop('keywords')
-    for keyword in keywords:
-        insert_kw_neo4j(keyword)
-
     authors = paper.pop('authors')
-    for author in authors:
-        insert_author_neo4j(author)
 
-    insert_paper_neo4j(paper)
+    Paper(**paper).save()
 
-    for keyword in keywords:
-        insert_keyword_paper_reference(paper['ID'], keyword)
+    for kw in keywords:
+        Keyword(value=kw).save()
 
     for author in authors:
-        insert_author_paper_reference(paper['ID'], author)
+        Author(name=author).save()
 
     response = jsonify()
     response.status_code = 201
@@ -47,5 +41,5 @@ def post_paper():
 @papers_api.route("/api/papers/search", methods=['GET'])
 def search_papers():
     title = request.args['title']
-    res = search_papers_neo4j(title)
+    res = None
     return jsonify(res)
