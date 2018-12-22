@@ -8,6 +8,8 @@ bibtexparser = "*"
 flask = "*"
 gunicorn = "*"
 "py2neo" = "*"
+flask-graphql = "*"
+graphene = "*"
 
 [dev-packages]
 pytest = "*"
