@@ -18,6 +18,7 @@ def get_graph():
             user=user,
             password=password,
             port=port,
+            secure = True,
         )
     return GRAPH
 
