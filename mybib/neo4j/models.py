@@ -8,11 +8,15 @@ graph: Graph = None
 
 def init_graph():
     global graph
+    host = os.getenv('NEO4J_URL')
+    user = os.getenv('NEO4J_USER')
+    password = os.getenv('NEO4J_PASS')
+    port = int(os.getenv('NEO4J_PORT'))
     graph = Graph(
-        host=os.getenv('NEO4J_HOST_URL'),
-        user=os.getenv('NEO4J_USER'),
-        password=os.getenv('NEO4J_PASS'),
-        port=os.getenv('NEO4J_PORT'),
+        host=host,
+        user=user,
+        password=password,
+        port=port,
     )
 
 
