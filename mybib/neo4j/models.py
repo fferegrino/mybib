@@ -3,21 +3,23 @@ import os
 from py2neo import Graph
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 
-graph: Graph = None
+GRAPH: Graph = None
 
 
-def init_graph():
-    global graph
-    host = os.getenv('NEO4J_URL')
-    user = os.getenv('NEO4J_USER')
-    password = os.getenv('NEO4J_PASS')
-    port = int(os.getenv('NEO4J_PORT'))
-    graph = Graph(
-        host=host,
-        user=user,
-        password=password,
-        port=port,
-    )
+def get_graph():
+    global GRAPH
+    if not GRAPH:
+        host = os.getenv('NEO4J_URL')
+        user = os.getenv('NEO4J_USER')
+        password = os.getenv('NEO4J_PASS')
+        port = int(os.getenv('NEO4J_PORT'))
+        GRAPH = Graph(
+            host=host,
+            user=user,
+            password=password,
+            port=port,
+        )
+    return GRAPH
 
 
 class BaseModel(GraphObject):
@@ -32,9 +34,11 @@ class BaseModel(GraphObject):
                 self.__other_properties_dict[key] = value
 
     def all(self):
+        graph = get_graph()
         return self.match(graph)
 
     def save(self):
+        graph = get_graph()
         graph.push(self)
 
 
@@ -89,6 +93,7 @@ class Paper(BaseModel):
         }
 
     def fetch(self):
+        graph = get_graph()
         return Paper.match(graph, self.ID).first()
 
     def fetch_authors(self):
@@ -112,7 +117,7 @@ class Paper(BaseModel):
     def fetch_references(self):
         return [{
             **proj[0].asdict(),
-            #**proj[1] # Reference properties
+            # **proj[1] # Reference properties
         } for proj in self.references._related_objects]
 
 
@@ -123,6 +128,7 @@ class Author(BaseModel):
     papers = RelatedTo('Paper', 'WROTE')
 
     def fetch(self):
+        graph = get_graph()
         return Author.match(graph, self.name).first()
 
     def asdict(self):
@@ -138,6 +144,7 @@ class Keyword(BaseModel):
     papers = RelatedFrom('Paper', 'HAS_KEYWORD')
 
     def fetch(self):
+        graph = get_graph()
         return Keyword.match(graph, self.value).first()
 
     def asdict(self):
@@ -153,6 +160,7 @@ class Project(BaseModel):
     papers = RelatedTo('Paper', 'PART_OF')
 
     def fetch(self):
+        graph = get_graph()
         return Project.match(graph, self.name).first()
 
     def asdict(self):

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 
 from mybib.bibtext import load_from_string
-from mybib.neo4j.models import Paper, Keyword, Author, graph
+from mybib.neo4j.models import Paper, Keyword, Author
 from mybib.web.authentication import requires_auth
 
 papers_api = Blueprint('papers_api', __name__)
