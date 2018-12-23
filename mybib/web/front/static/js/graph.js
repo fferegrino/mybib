@@ -18,15 +18,6 @@ $(document).ready(function() {
     location
     booktitle
     doi,
-    keywords {
-      value
-    },
-    projects {
-      name
-    },
-    authors {
-      name
-    },
     references{
       ID
     }
