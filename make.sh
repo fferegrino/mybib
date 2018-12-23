@@ -9,7 +9,7 @@ notebooks ()
 
 app () {
     export PYTHONPATH=$PWD
-    $RUN_IN_PIPENV python mybib/web/app.py
+    $RUN_IN_PIPENV gunicorn --chdir mybib/web app:app
 }
 
 "$@"

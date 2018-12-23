@@ -16,12 +16,7 @@ app.register_blueprint(frontend)
 app.register_blueprint(root_api)
 app.register_blueprint(papers_api)
 app.register_blueprint(references_api)
-
-if __name__ == '__main__':
-    init_graph()
-
-    app.add_url_rule('/graphql', view_func=GraphQLView.as_view(
-        'graphql', schema=schemas.schema, graphiql=True)
-    )
-
-    app.run()
+init_graph()
+app.add_url_rule('/graphql', view_func=GraphQLView.as_view(
+    'graphql', schema=schemas.schema, graphiql=True)
+)
