@@ -23,33 +23,42 @@ def post_paper():
     keywords = paper_dict.pop('keywords')
     authors = paper_dict.pop('authors')
 
-    inserted_paper = Paper(**paper_dict)
-    inserted_paper.save()
-
-    for kw in keywords:
-        keyword = Keyword(value=kw)
-        fetched_keyword = keyword.fetch()
-        if fetched_keyword:
-            inserted_paper.keywords.add(fetched_keyword)
-        else:
-            keyword.save()
-            inserted_paper.keywords.add(keyword)
-
-    for author in authors:
-        author_ = Author(name=author)
-        fetched_author = author_.fetch()
-        if fetched_author:
-            inserted_paper.authors.add(fetched_author)
-        else:
-            author_.save()
-            inserted_paper.authors.add(author_)
-
-    inserted_paper.save()
+    paper_to_insert = Paper(**paper_dict)
 
     response = jsonify()
-    response.status_code = 201
+
+    already_exists = paper_to_insert.fetch() is not None
+
+    if not already_exists:
+        paper_to_insert.save()
+
+        for kw in keywords:
+            keyword = Keyword(value=kw)
+            fetched_keyword = keyword.fetch()
+            if fetched_keyword:
+                paper_to_insert.keywords.add(fetched_keyword)
+            else:
+                keyword.save()
+                paper_to_insert.keywords.add(keyword)
+
+        for author in authors:
+            author_ = Author(name=author)
+            fetched_author = author_.fetch()
+            if fetched_author:
+                paper_to_insert.authors.add(fetched_author)
+            else:
+                author_.save()
+                paper_to_insert.authors.add(author_)
+
+        paper_to_insert.save()
+
+        response.status_code = 201
+        response.autocorrect_location_header = False
+
+    else:
+        response.status_code = 409
+
     response.headers['location'] = '/api/papers/' + paper_dict['ID']
-    response.autocorrect_location_header = False
     return response
 
 

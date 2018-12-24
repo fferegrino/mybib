@@ -50,6 +50,13 @@ $(document).ready(function() {
             contentType: "text/plain",
             success: function(data) {
                 alert("Inserted!");
+            },
+            error: function(result) {
+                if(result.status == 409) {
+                    alert("That entry already exists!");
+                } else {
+                    alert(result.status + " " + result.statusText);
+                }
             }
         })
 
