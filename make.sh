@@ -13,7 +13,7 @@ test () {
 
 app () {
     export PYTHONPATH=$PWD
-    $RUN_IN_PIPENV gunicorn --chdir mybib/web app:app
+    $RUN_IN_PIPENV gunicorn --chdir mybib/web --reload app:app
 }
 
 "$@"
