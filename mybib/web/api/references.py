@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 
 from mybib.neo4j.models import Paper
+from mybib.neo4j.models import are_related
 from mybib.web.authentication import requires_auth
 
 references_api = Blueprint('references_api', __name__)
@@ -13,7 +14,7 @@ def post_reference(referee, referenced):
     response = jsonify()
 
     try:
-        relationship_exists = Paper.are_related(referee, referenced)
+        relationship_exists = are_related(referee, referenced)
     except AssertionError as ae:
         response.status_code = 400
         return response
