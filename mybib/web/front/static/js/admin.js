@@ -5,6 +5,7 @@ $(document).ready(function() {
     var userText = $('#user');
     var passwordText = $('#password');
     var referenceButton = $('#reference');
+    var referenceMessageText = $("#referenceMessage");
     var paper1Text = $('#paper1');
     var paper2Text = $('#paper2');
     var addEntryButton = $('#addEntry');
@@ -17,15 +18,23 @@ $(document).ready(function() {
     referenceButton.click(function(e) {
         var referee = paper1Text.val();
         var referenced = paper2Text.val();
+        var message = referenceMessageText.val();
         var url = "/api/references/" + referee + "/" + referenced;
         $.ajax({
             url: url,
             type: "POST",
             beforeSend: setAuth,
-            data: JSON.stringify({}),
+            data: JSON.stringify({message:message}),
             contentType: "application/json",
             success: function(result) {
                 alert("Success!");
+            },
+            error: function(result) {
+                if(result.status == 409) {
+                    alert("Relationship already exists!");
+                } else {
+                    alert(result.status + " " + result.statusText);
+                }
             }
         });
     });

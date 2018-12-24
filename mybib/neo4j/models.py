@@ -5,6 +5,8 @@ from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 
 GRAPH: Graph = None
 
+REFERENCES_RELATIONSHIP = 'REFERENCES'
+
 
 def get_graph():
     global GRAPH
@@ -68,8 +70,8 @@ class Paper(BaseModel):
     keywords = RelatedTo('Keyword', 'HAS_KEYWORD')
     projects = RelatedTo('Project', 'PART_OF')
 
-    references = RelatedTo('Paper', 'REFERENCES')
-    referenced_by = RelatedFrom('Paper', 'REFERENCES')
+    references = RelatedTo('Paper', REFERENCES_RELATIONSHIP )
+    referenced_by = RelatedFrom('Paper', REFERENCES_RELATIONSHIP )
 
     def asdict(self):
         return {
@@ -120,6 +122,19 @@ class Paper(BaseModel):
             **proj[0].asdict(),
             # **proj[1] # Reference properties
         } for proj in self.references._related_objects]
+
+    @staticmethod
+    def are_related(referee_id, referenced_id):
+        referee = Paper(ID=referee_id).fetch()
+        referenced = Paper(ID=referenced_id).fetch()
+
+        assert referee is not None
+        assert referenced is not None
+
+        graph = get_graph()
+        matches = list(graph.match((referee.__ogm__.node, referenced.__ogm__.node), r_type=REFERENCES_RELATIONSHIP))
+        return len(matches) > 0
+
 
 
 class Author(BaseModel):
