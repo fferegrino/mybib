@@ -1,31 +1,63 @@
 $(document).ready(function() {
-    var graphqlQuery = `
-{
-  papers {
-    ID
-    title
-    address
-    acmid
-    year
-    isbn
-    _bibtex
-    numpages
-    url
-    pages
-    series
-    ENTRYTYPE
-    publisher
-    location
-    booktitle
-    doi,
-    references{
-      ID
-    }
-  }
-}`;
+
+    var fields = [
+"ID",
+"title",
+"address",
+"acmid",
+"year",
+"isbn",
+"_bibtex",
+"numpages",
+"url",
+"pages",
+"series",
+"ENTRYTYPE",
+"publisher",
+"location",
+"booktitle",
+"doi",
+    ]
+
+var referencesNodes =  "references{ID}";
+var authorNodes = "authors{name}";
+var keywordNodes = "keywords{value}";
+var referenceNodes = "references{ID}";
+var projectNodes = "projects{name}";
 
 
-    $.get('graphql?query=' + graphqlQuery, function(response) {
+
+
+    var searchButton = $("#searchButton");
+    var authorsCheck = $("#authorsCheck");
+    var keywordsCheck = $("#keywordsCheck");
+    var projectsCheck = $("#projectsCheck");
+    var referencesCheck = $("#referencesCheck");
+
+    searchButton.click(function(e) {
+        var query_fields = fields.slice();
+        if(authorsCheck.is(':checked')) {
+            query_fields.push(authorNodes);
+        }
+        if(keywordsCheck.is(':checked')) {
+            query_fields.push(keywordNodes);
+        }
+        if(projectsCheck.is(':checked')) {
+            query_fields.push(projectNodes);
+        }
+        if(referencesCheck.is(':checked')){
+            query_fields.push(referenceNodes);
+        }
+
+        console.log(query_fields.join(', '));
+
+        query_graph("{ papers {" + query_fields.join(', ') + '} }');
+    });
+
+
+    function query_graph(query) {
+    console.log(query);
+    $.get('graphql?query=' + query, function(response) {
         papers = response.data.papers
 
         var nodes = []
@@ -35,11 +67,12 @@ $(document).ready(function() {
         if(papers !== undefined) {
             for (var i = 0; i < papers.length; i++) {
               paper = papers[i];
-              nodes.push({
+              node = {
                 id:paper.ID,
                 label:paper.title,
                 color:{background:"green"},
-              });
+              };
+              nodes.push(node);
 
 
               var keywords = paper.keywords;
@@ -61,10 +94,9 @@ $(document).ready(function() {
               }
               var authors = paper.authors;
               if(authors !== undefined) {
-
                 for (var j = 0; j < authors.length; j++) {
                     author = authors[j];
-                    console.log(author)
+                    console.log(author);
                     edges.push({
                         from:paper.ID,
                         to:"author_"+author.name,
@@ -140,5 +172,6 @@ $(document).ready(function() {
         };
 
         network = new vis.Network(container, data, options);
-    })
+    });
+    }
 });
