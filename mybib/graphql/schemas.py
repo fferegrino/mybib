@@ -1,6 +1,7 @@
 import graphene
 
-from mybib.neo4j.models import Paper, return_keywords, return_papers_by_keyword
+from mybib.neo4j.models import Paper, return_keywords, return_papers_by_keyword, return_papers_by_title, \
+    return_papers_by_author, return_papers_by_project
 
 
 class MyBibSchema(graphene.ObjectType):
@@ -61,7 +62,11 @@ class Query(graphene.ObjectType):
 
     keywords = graphene.List(lambda: KeywordSchema, keyword=graphene.String())
 
+    by_id = graphene.List(lambda: PaperSchema, parameter=graphene.String())
     by_keywords = graphene.List(lambda: PaperSchema, parameter=graphene.String())
+    by_author = graphene.List(lambda: PaperSchema, parameter=graphene.String())
+    by_title = graphene.List(lambda: PaperSchema, parameter=graphene.String())
+    by_project = graphene.List(lambda: PaperSchema, parameter=graphene.String())
 
     papers = graphene.List(lambda: PaperSchema)
 
@@ -75,8 +80,21 @@ class Query(graphene.ObjectType):
     def resolve_keywords(self, info, keyword):
         return [KeywordSchema(**kw) for kw in return_keywords(keyword)]
 
+    def resolve_by_id(self, info, parameter):
+        customer = Paper(ID=parameter).fetch()
+        return [PaperSchema(**customer.asdict())]
+
     def resolve_by_keywords(self, info, parameter):
         return [PaperSchema(**paper) for paper in return_papers_by_keyword(parameter)]
+
+    def resolve_by_author(self, info, parameter):
+        return [PaperSchema(**paper) for paper in return_papers_by_author(parameter)]
+
+    def resolve_by_project(self, info, parameter):
+        return [PaperSchema(**paper) for paper in return_papers_by_project(parameter)]
+
+    def resolve_by_title(self, info, parameter):
+        return [PaperSchema(**paper.asdict()) for paper in return_papers_by_title(parameter)]
 
 
 schema = graphene.Schema(query=Query, auto_camelcase=False)
