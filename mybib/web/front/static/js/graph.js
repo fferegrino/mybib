@@ -33,6 +33,8 @@ var projectNodes = "projects{name}";
     var keywordsCheck = $("#keywordsCheck");
     var projectsCheck = $("#projectsCheck");
     var referencesCheck = $("#referencesCheck");
+    var queryParameterText = $('#queryParameter');
+    var queryTypeSelect = $("#queryType");
 
     searchButton.click(function(e) {
         var query_fields = fields.slice();
@@ -49,16 +51,20 @@ var projectNodes = "projects{name}";
             query_fields.push(referenceNodes);
         }
 
-        console.log(query_fields.join(', '));
+        queryType = queryTypeSelect.val();
+        if(queryType !== 'papers') {
+            queryType += ' (parameter: "' + queryParameterText.val() + '")'
+        }
 
-        query_graph("{ papers {" + query_fields.join(', ') + '} }');
+        query_graph("{ " + queryType + " {" + query_fields.join(', ') + '} }');
     });
 
 
     function query_graph(query) {
     console.log(query);
     $.get('graphql?query=' + query, function(response) {
-        papers = response.data.papers
+        papers = response.data[queryTypeSelect.val()];
+        console.log(papers)
 
         var nodes = []
         var edges = []
