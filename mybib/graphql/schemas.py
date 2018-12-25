@@ -1,6 +1,6 @@
 import graphene
 
-from mybib.neo4j.models import Paper
+from mybib.neo4j.models import Paper, return_keywords, return_papers_by_keyword
 
 
 class MyBibSchema(graphene.ObjectType):
@@ -59,6 +59,10 @@ class PaperSchema(MyBibSchema):
 class Query(graphene.ObjectType):
     paper = graphene.Field(lambda: PaperSchema, ID=graphene.String())
 
+    keywords = graphene.List(lambda: KeywordSchema, keyword=graphene.String())
+
+    by_keywords = graphene.List(lambda: PaperSchema, parameter=graphene.String())
+
     papers = graphene.List(lambda: PaperSchema)
 
     def resolve_paper(self, info, ID):
@@ -67,6 +71,12 @@ class Query(graphene.ObjectType):
 
     def resolve_papers(self, info):
         return [PaperSchema(**paper.asdict()) for paper in Paper().all()]
+
+    def resolve_keywords(self, info, keyword):
+        return [KeywordSchema(**kw) for kw in return_keywords(keyword)]
+
+    def resolve_by_keywords(self, info, parameter):
+        return [PaperSchema(**paper) for paper in return_papers_by_keyword(parameter)]
 
 
 schema = graphene.Schema(query=Query, auto_camelcase=False)

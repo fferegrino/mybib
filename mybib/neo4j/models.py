@@ -1,11 +1,13 @@
 import os
 
-from py2neo import Graph
+from py2neo import Graph, NodeMatcher
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 
 GRAPH: Graph = None
 
 REFERENCES_RELATIONSHIP = 'REFERENCES'
+
+HAS_KEYWORD_RELATIONSHIP = 'HAS_KEYWORD'
 
 
 def get_graph():
@@ -79,7 +81,7 @@ class Paper(BaseModel):
     doi = Property()
 
     authors = RelatedFrom('Author', 'WROTE')
-    keywords = RelatedTo('Keyword', 'HAS_KEYWORD')
+    keywords = RelatedTo('Keyword', HAS_KEYWORD_RELATIONSHIP)
     projects = RelatedTo('Project', 'PART_OF')
 
     references = RelatedTo('Paper', REFERENCES_RELATIONSHIP)
@@ -152,15 +154,42 @@ class Author(BaseModel):
         }
 
 
+def return_keywords(query):
+    graph = get_graph()
+    matcher = NodeMatcher(graph)
+    kws = matcher.match('Keyword', value__contains=query)
+    return [dict(kw) for kw in kws]
+
+
+def return_papers_by_keyword(query):
+    graph = get_graph()
+    matcher = NodeMatcher(graph)
+    kws = matcher.match('Keyword', value__contains=query)
+    retrieved_papers = set()
+    papers = []
+    for keyword in [Keyword(**dict(kw)).fetch() for kw in kws]:
+        for paper in keyword.fetch_papers():
+            if paper['ID'] in retrieved_papers:
+                continue
+            papers.append(paper)
+            retrieved_papers.add(paper['ID'])
+    return papers
+
+
 class Keyword(BaseModel):
     __primarykey__ = 'value'
     value = Property()
 
-    papers = RelatedFrom('Paper', 'HAS_KEYWORD')
+    papers = RelatedFrom('Paper', HAS_KEYWORD_RELATIONSHIP)
 
     def fetch(self):
         graph = get_graph()
         return Keyword.match(graph, self.value).first()
+
+    def fetch_papers(self):
+        return [{
+            **paper[0].asdict(),
+        } for paper in self.papers._related_objects]
 
     def asdict(self):
         return {
