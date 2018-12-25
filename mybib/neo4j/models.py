@@ -1,11 +1,14 @@
 import os
 
-from py2neo import Graph
+from py2neo import Graph, NodeMatcher
 from py2neo.ogm import GraphObject, Property, RelatedTo, RelatedFrom
 
 GRAPH: Graph = None
 
 REFERENCES_RELATIONSHIP = 'REFERENCES'
+WROTE_RELATIONSHIP = 'WROTE'
+HAS_KEYWORD_RELATIONSHIP = 'HAS_KEYWORD'
+PART_OF_RELATIONSHIP = 'PART_OF'
 
 
 def get_graph():
@@ -78,9 +81,9 @@ class Paper(BaseModel):
     booktitle = Property()
     doi = Property()
 
-    authors = RelatedFrom('Author', 'WROTE')
-    keywords = RelatedTo('Keyword', 'HAS_KEYWORD')
-    projects = RelatedTo('Project', 'PART_OF')
+    authors = RelatedFrom('Author', WROTE_RELATIONSHIP)
+    keywords = RelatedTo('Keyword', HAS_KEYWORD_RELATIONSHIP)
+    projects = RelatedTo('Project', PART_OF_RELATIONSHIP)
 
     references = RelatedTo('Paper', REFERENCES_RELATIONSHIP)
     referenced_by = RelatedFrom('Paper', REFERENCES_RELATIONSHIP)
@@ -140,11 +143,16 @@ class Author(BaseModel):
     __primarykey__ = 'name'
     name = Property()
 
-    papers = RelatedTo('Paper', 'WROTE')
+    papers = RelatedTo('Paper', WROTE_RELATIONSHIP)
 
     def fetch(self):
         graph = get_graph()
         return Author.match(graph, self.name).first()
+
+    def fetch_papers(self):
+        return [{
+            **paper[0].asdict(),
+        } for paper in self.papers._related_objects]
 
     def asdict(self):
         return {
@@ -152,15 +160,79 @@ class Author(BaseModel):
         }
 
 
+def return_keywords(query):
+    graph = get_graph()
+    matcher = NodeMatcher(graph)
+    kws = matcher.match('Keyword', value__contains=query)
+    return [dict(kw) for kw in kws]
+
+
+def return_papers_by_keyword(query):
+    graph = get_graph()
+    matcher = NodeMatcher(graph)
+    kws = matcher.match('Keyword', value__contains=query)
+    retrieved_papers = set()
+    papers = []
+    for keyword in [Keyword(**dict(kw)).fetch() for kw in kws]:
+        for paper in keyword.fetch_papers():
+            if paper['ID'] in retrieved_papers:
+                continue
+            papers.append(paper)
+            retrieved_papers.add(paper['ID'])
+    return papers
+
+
+def return_papers_by_author(query):
+    graph = get_graph()
+    matcher = NodeMatcher(graph)
+    kws = matcher.match('Author', name__contains=query)
+    retrieved_papers = set()
+    papers = []
+    for keyword in [Author(**dict(kw)).fetch() for kw in kws]:
+        for paper in keyword.fetch_papers():
+            if paper['ID'] in retrieved_papers:
+                continue
+            papers.append(paper)
+            retrieved_papers.add(paper['ID'])
+    return papers
+
+
+def return_papers_by_project(query):
+    graph = get_graph()
+    matcher = NodeMatcher(graph)
+    kws = matcher.match('Project', name__contains=query)
+    retrieved_papers = set()
+    papers = []
+    for keyword in [Project(**dict(kw)).fetch() for kw in kws]:
+        for paper in keyword.fetch_papers():
+            if paper['ID'] in retrieved_papers:
+                continue
+            papers.append(paper)
+            retrieved_papers.add(paper['ID'])
+    return papers
+
+
+def return_papers_by_title(query):
+    graph = get_graph()
+    matcher = NodeMatcher(graph)
+    nodes = matcher.match('Paper', title__contains=query)
+    return [Paper(**dict(p)) for p in nodes]
+
+
 class Keyword(BaseModel):
     __primarykey__ = 'value'
     value = Property()
 
-    papers = RelatedFrom('Paper', 'HAS_KEYWORD')
+    papers = RelatedFrom('Paper', HAS_KEYWORD_RELATIONSHIP)
 
     def fetch(self):
         graph = get_graph()
         return Keyword.match(graph, self.value).first()
+
+    def fetch_papers(self):
+        return [{
+            **paper[0].asdict(),
+        } for paper in self.papers._related_objects]
 
     def asdict(self):
         return {
@@ -172,11 +244,16 @@ class Project(BaseModel):
     __primarykey__ = 'name'
     name = Property()
 
-    papers = RelatedTo('Paper', 'PART_OF')
+    papers = RelatedTo('Paper', PART_OF_RELATIONSHIP)
 
     def fetch(self):
         graph = get_graph()
         return Project.match(graph, self.name).first()
+
+    def fetch_papers(self):
+        return [{
+            **paper[0].asdict(),
+        } for paper in self.papers._related_objects]
 
     def asdict(self):
         return {
