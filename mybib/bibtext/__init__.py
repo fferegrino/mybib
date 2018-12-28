@@ -57,7 +57,6 @@ def _customize(record):
     record = bibtextparser_type(record)
     record = _get_authors(record)
     record = editor(record)
-    record = journal(record)
     record = _get_keywords(record)
     record = page_double_hyphen(record)
     return record
