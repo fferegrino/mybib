@@ -83,7 +83,7 @@ class Paper(BaseModel):
 
     authors = RelatedFrom('Author', WROTE_RELATIONSHIP)
     keywords = RelatedTo('Keyword', HAS_KEYWORD_RELATIONSHIP)
-    projects = RelatedTo('Project', PART_OF_RELATIONSHIP)
+    projects = RelatedFrom('Project', PART_OF_RELATIONSHIP)
 
     references = RelatedTo('Paper', REFERENCES_RELATIONSHIP)
     referenced_by = RelatedFrom('Paper', REFERENCES_RELATIONSHIP)

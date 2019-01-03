@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request
 
-from mybib.neo4j.models import Paper
+from mybib.neo4j.models import Paper, Keyword, Project
 
 frontend = Blueprint('frontend', __name__)
 
@@ -20,6 +20,7 @@ def get_paper(identifier):
     paper = Paper(ID=identifier).fetch()
 
     keywords = ','.join([kw['value'] for kw in paper.fetch_keywords()])
+    print(paper.fetch_projects())
     projects = ','.join([pr['name'] for pr in paper.fetch_projects()])
 
     paper = paper.asdict()
@@ -37,6 +38,33 @@ def get_paper(identifier):
 @frontend.route('/papers/<paper_id:identifier>', methods=['POST'])
 def post_paper(identifier):
     updated_paper = request.form.to_dict()
-    keywords = updated_paper.pop('keywords').split('')
-    projects = updated_paper.pop('projects')
+
+    keywords = updated_paper.pop('keywords').split(',')
+    projects = updated_paper.pop('projects').split(',')
+    ID = updated_paper.pop('ID')
+
+    paper_to_update = Paper(ID=ID).fetch()
+    print(paper_to_update)
+
+    for kw in keywords:
+        keyword = Keyword(value=kw)
+        fetched_keyword = keyword.fetch()
+        if fetched_keyword:
+            paper_to_update.keywords.add(fetched_keyword)
+        else:
+            keyword.save()
+            paper_to_update.keywords.add(keyword)
+
+    for pj in projects:
+        project = Project(name=pj)
+        fetched_project = project.fetch()
+        if fetched_project:
+            paper_to_update.projects.add(fetched_project)
+        else:
+            project.save()
+            paper_to_update.projects.add(project)
+
+    paper_to_update.save()
+
+    print(keywords, projects)
     return str(request.form.to_dict())
