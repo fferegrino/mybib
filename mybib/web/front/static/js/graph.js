@@ -70,6 +70,7 @@ var projectNodes = "projects{name}";
         var edges = []
         var keywordsContainer = {};
         var authorsContainer = {};
+        var projectsContainer = {};
         if(papers !== undefined) {
             for (var i = 0; i < papers.length; i++) {
               paper = papers[i];
@@ -129,6 +130,25 @@ var projectNodes = "projects{name}";
                     });
                 }
               }
+
+
+
+              var projects = paper.projects;
+              if(projects !== undefined) {
+                for (var j = 0; j < projects.length; j++) {
+                    project = projects[j];
+                    edges.push({
+                        from:paper.ID,
+                        to:"project_"+project.name,
+                        arrows:"from",
+                        //label: "wrote"
+                    })
+                    if(project.name in projectsContainer) {
+                        continue;
+                    }
+                    projectsContainer[project.name] = project.name;
+                }
+              }
           }
 
             for (var prop in keywordsContainer) {
@@ -145,6 +165,16 @@ var projectNodes = "projects{name}";
                 if (authorsContainer.hasOwnProperty(prop)) {
                     nodes.push({
                         id:"author_" +prop,
+                        label:prop,
+                        color:{background:"purple"},
+                    });
+                }
+            }
+
+            for (var prop in projectsContainer) {
+                if (projectsContainer.hasOwnProperty(prop)) {
+                    nodes.push({
+                        id:"project_" +prop,
                         label:prop,
                         color:{background:"purple"},
                     });

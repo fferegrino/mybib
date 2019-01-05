@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}{{ title }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <form method="post">
+            <div class="field is-horizontal has-addons">
+                <div class="field-label is-normal">
+                    <label class="label">Paper</label>
+                </div>
+                <div class="field-body">
+                    <p class="control">
+                        <a class="button is-static is-normal">
+                            {{ ID }}
+                        </a>
+                        <input type="hidden" id="ID" name="ID" value="{{ ID }}">
+                    </p>
+                    <p class="control is-expanded">
+                        <input class="input is-normal" id="title" name="title" type="text" value="{{ title }}">
+                    </p>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">Keywords</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <div class="control">
+                            <input class="input is-normal" id="keywords" name="keywords" value="{{ keywords }}" type="tags">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">Projects</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <div class="control">
+                            <input class="input is-normal" id="projects" name="projects" value="{{ projects }}" type="tags">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label">
+                    <!-- Left empty for spacing -->
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <div class="control">
+                            <button type="submit" id="reference" class="button is-primary">
+                                Save!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script type="text/javascript" src="https://wikiki.github.io/node_modules/bulma-extensions/bulma-tagsinput/dist/js/bulma-tagsinput.js"></script>
+{% endblock %}
