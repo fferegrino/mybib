@@ -25,44 +25,29 @@
                 </div>
             </div>
             <div class="field is-horizontal">
-                <div class="field-label  is-small">
+                <div class="field-label is-normal">
                     <label class="label">Keywords</label>
                 </div>
                 <div class="field-body">
                     <div class="field">
                         <div class="control">
-                            <input class="input is-small" id="keywords" name="keywords" value="{{ keywords }}" type="text">
+                            <input class="input is-normal" id="keywords" name="keywords" value="{{ keywords }}" type="tags">
                         </div>
                     </div>
                 </div>
             </div>
             <div class="field is-horizontal">
-                <div class="field-label  is-small">
+                <div class="field-label is-normal">
                     <label class="label">Projects</label>
                 </div>
                 <div class="field-body">
                     <div class="field">
                         <div class="control">
-                            <input class="input is-small" id="projects" name="projects" value="{{ projects }}" type="text">
+                            <input class="input is-normal" id="projects" name="projects" value="{{ projects }}" type="tags">
                         </div>
                     </div>
                 </div>
             </div>
-            {% for attribute in paper %}
-            <div class="field is-horizontal">
-                <div class="field-label  is-small">
-                    <label class="label">{{attribute}}</label>
-                </div>
-                <div class="field-body">
-                    <div class="field">
-                        <div class="control">
-                            <input class="input is-small" id="{{attribute}}" name="{{attribute}}" value="{{paper[attribute] or ''}}"
-                                   type="text">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
             <div class="field is-horizontal">
                 <div class="field-label">
                     <!-- Left empty for spacing -->
@@ -80,4 +65,6 @@
         </form>
     </div>
 </section>
+
+<script type="text/javascript" src="https://wikiki.github.io/node_modules/bulma-extensions/bulma-tagsinput/dist/js/bulma-tagsinput.js"></script>
 {% endblock %}

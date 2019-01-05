@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request
+from werkzeug.utils import redirect
 
 from mybib.neo4j.models import Paper, Keyword, Project
 
@@ -20,7 +21,6 @@ def get_paper(identifier):
     paper = Paper(ID=identifier).fetch()
 
     keywords = ','.join([kw['value'] for kw in paper.fetch_keywords()])
-    print(paper.fetch_projects())
     projects = ','.join([pr['name'] for pr in paper.fetch_projects()])
 
     paper = paper.asdict()
@@ -39,14 +39,23 @@ def get_paper(identifier):
 def post_paper(identifier):
     updated_paper = request.form.to_dict()
 
-    keywords = updated_paper.pop('keywords').split(',')
-    projects = updated_paper.pop('projects').split(',')
+    new_keywords = set(updated_paper.pop('keywords').split(','))
+    new_projects = set(updated_paper.pop('projects').split(','))
     ID = updated_paper.pop('ID')
 
     paper_to_update = Paper(ID=ID).fetch()
-    print(paper_to_update)
+    existing_keywords = {keyword['value'] for keyword in paper_to_update.fetch_keywords()}
+    existing_projects = {project['name'] for project in paper_to_update.fetch_projects()}
 
-    for kw in keywords:
+    keep_keywords = existing_keywords.intersection(new_keywords)
+    to_remove_keywords = existing_keywords - keep_keywords
+    to_add_keywords = new_keywords - keep_keywords
+
+    keep_projects = existing_projects.intersection(new_projects)
+    to_remove_projects = existing_projects - keep_projects
+    to_add_projects = new_projects - keep_projects
+
+    for kw in to_add_keywords:
         keyword = Keyword(value=kw)
         fetched_keyword = keyword.fetch()
         if fetched_keyword:
@@ -55,7 +64,12 @@ def post_paper(identifier):
             keyword.save()
             paper_to_update.keywords.add(keyword)
 
-    for pj in projects:
+    for kw in to_remove_keywords:
+        keyword = Keyword(value=kw)
+        fetched_keyword = keyword.fetch()
+        paper_to_update.keywords.remove(fetched_keyword)
+
+    for pj in to_add_projects:
         project = Project(name=pj)
         fetched_project = project.fetch()
         if fetched_project:
@@ -64,7 +78,11 @@ def post_paper(identifier):
             project.save()
             paper_to_update.projects.add(project)
 
+    for pj in to_remove_projects:
+        project = Project(name=pj)
+        fetched_project = project.fetch()
+        paper_to_update.projects.remove(fetched_project)
+
     paper_to_update.save()
 
-    print(keywords, projects)
-    return str(request.form.to_dict())
+    return redirect('/papers/' + identifier)
