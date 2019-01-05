@@ -8,7 +8,7 @@ notebooks ()
 }
 
 test () {
-    $RUN_IN_PIPENV pytest
+    $RUN_IN_PIPENV pytest -vvv
 }
 
 app () {

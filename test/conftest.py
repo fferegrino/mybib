@@ -21,6 +21,48 @@ def bibtex_multiple_authors():
  keywords = {feature extraction, product data, schema matching, web tables},
 }"""
 
+@pytest.fixture
+def bibtex_dblp_format():
+    return """@article{DBLP:journals/corr/NohASH16,
+  author    = {Hyeonwoo Noh and
+               Andre Araujo and
+               Jack Sim and
+               Bohyung Han},
+  title     = {Image Retrieval with Deep Local Features and Attention-based Keypoints},
+  journal   = {CoRR},
+  volume    = {abs/1612.06321},
+  year      = {2016},
+  url       = {http://arxiv.org/abs/1612.06321},
+  archivePrefix = {arXiv},
+  eprint    = {1612.06321},
+  timestamp = {Mon, 13 Aug 2018 16:48:55 +0200},
+  biburl    = {https://dblp.org/rec/bib/journals/corr/NohASH16},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}"""
+
+@pytest.fixture
+def json_dblp_format():
+    return [{
+  "journal": "CoRR",
+  "volume": "abs/1612.06321",
+  "year": "2016",
+  "url": "http://arxiv.org/abs/1612.06321",
+  "archiveprefix": "arXiv",
+  "eprint": "1612.06321",
+    "keywords":[],
+  "timestamp": "Mon, 13 Aug 2018 16:48:55 +0200",
+  "biburl": "https://dblp.org/rec/bib/journals/corr/NohASH16",
+  "bibsource": "dblp computer science bibliography, https://dblp.org",
+        "title": "Image Retrieval with Deep Local Features and Attention-based Keypoints",
+        "authors": [
+            "Noh, Hyeonwoo",
+            "Araujo, Andre",
+            "Sim, Jack",
+            "Han, Bohyung",
+        ],
+        "ENTRYTYPE": "article",
+        "ID": "DBLP:journals/corr/NohASH16",
+    }]
 
 @pytest.fixture
 def json_multiple_authors():
