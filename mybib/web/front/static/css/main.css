@@ -1,3 +1,23 @@
 .box {
     border: 1px solid #fefefe;
 }
+
+.checkbox-field {
+    border: 1px solid;
+    border-color: #dbdbdb;
+    color: #363636;
+    box-shadow: inset 0 1px 2px rgba(10,10,10,.1);
+}
+
+.checkbox-field div.control {
+    height: 34px;
+    padding: 4px;
+}
+
+.checkbox-field label.checkbox {
+    font-size: 0.8em;
+}
+
+.checkbox-field label.checkbox input[type=checkbox] {
+    margin: 0px 3px 0px 5px;
+}
