@@ -129,10 +129,10 @@ $(document).ready(function() {
                         for (var j = 0; j < references.length; j++) {
                             reference = references[j];
                             edges.push({
-                                from: paper.ID,
-                                to: reference.ID,
+                                to: paper.ID,
+                                from: reference.ID,
                                 arrows: "from",
-                                //label: "references"
+                                label: "cites"
                             });
                         }
                     }
@@ -195,7 +195,6 @@ $(document).ready(function() {
 
             }
 
-
             var options = {
                 interaction: {
                     multiselect: true,
@@ -204,6 +203,13 @@ $(document).ready(function() {
                 },
                 nodes: {
                     shape: 'dot',
+                    size: 15,
+                    font: {
+                        size: 10,
+                        color: '#000'
+                    }
+                },
+                edges: {
                     size: 15,
                     font: {
                         size: 10,
