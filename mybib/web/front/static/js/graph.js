@@ -1,3 +1,15 @@
+function break_sentence(str) {
+  var words = 3;
+  var splited = str.split(" ");
+
+  var sentence = [];
+
+  for(var i = 0; i < splited.length; i+=words) {
+    sentence.push(splited.slice(i, i+words).join(' '));
+  }
+  return sentence.join('\n');
+}
+
 $(document).ready(function() {
 
     var fields = [
@@ -80,7 +92,7 @@ $(document).ready(function() {
                     paper = papers[i];
                     node = {
                         id: paper.ID,
-                        label: paper.title,
+                        label: break_sentence(paper.title),
                         color: {
                             background: "green"
                         },
@@ -227,12 +239,7 @@ $(document).ready(function() {
             var network = new vis.Network(container, data, options);
 
             // Interactions
-
-            network.on("click", function (params) {
-                params.event = "[original event]";
-                document.getElementById('debug').innerHTML = '<h2>Click event:</h2>' + JSON.stringify(params, null, 4);
-                console.log('click event, getNodeAt returns: ' + this.getNodeAt(params.pointer.DOM));
-            });
+            // https://github.com/almende/vis/blob/master/examples/network/events/interactionEvents.html
 
             network.on("doubleClick", function (params) {
                 params.event = "[original event]";
