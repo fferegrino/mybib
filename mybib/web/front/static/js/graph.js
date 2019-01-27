@@ -210,9 +210,8 @@ $(document).ready(function() {
                     }
                 },
                 edges: {
-                    size: 15,
                     font: {
-                        size: 10,
+                        size: 9,
                         color: '#000'
                     }
                 }
@@ -225,11 +224,30 @@ $(document).ready(function() {
                 edges: edges
             };
 
-            network = new vis.Network(container, data, options);
+            var network = new vis.Network(container, data, options);
+
+            // Interactions
+
+            network.on("click", function (params) {
+                params.event = "[original event]";
+                document.getElementById('debug').innerHTML = '<h2>Click event:</h2>' + JSON.stringify(params, null, 4);
+                console.log('click event, getNodeAt returns: ' + this.getNodeAt(params.pointer.DOM));
+            });
+
+            network.on("doubleClick", function (params) {
+                params.event = "[original event]";
+                document.getElementById('debug').innerHTML = '<h2>doubleClick event:</h2>' + JSON.stringify(params, null, 4);
+                var node_id = this.getNodeAt(params.pointer.DOM);
+                window.location.href = '/papers/' + node_id;
+            });
+
         });
     }
 
     if( hash != 'noquery' ) {
         do_qyuery();
+    }
+    if (hash == 'debug') {
+        $('#debug').show();
     }
 });

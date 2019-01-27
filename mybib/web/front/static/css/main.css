@@ -21,3 +21,7 @@
 .checkbox-field label.checkbox input[type=checkbox] {
     margin: 0px 3px 0px 5px;
 }
+
+#debug {
+    display: none;
+}
