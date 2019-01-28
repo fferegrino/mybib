@@ -1,3 +1,15 @@
+function break_sentence(str) {
+  var words = 3;
+  var splited = str.split(" ");
+
+  var sentence = [];
+
+  for(var i = 0; i < splited.length; i+=words) {
+    sentence.push(splited.slice(i, i+words).join(' '));
+  }
+  return sentence.join('\n');
+}
+
 $(document).ready(function() {
 
     var fields = [
@@ -80,7 +92,7 @@ $(document).ready(function() {
                     paper = papers[i];
                     node = {
                         id: paper.ID,
-                        label: paper.title,
+                        label: break_sentence(paper.title),
                         color: {
                             background: "green"
                         },
@@ -210,9 +222,8 @@ $(document).ready(function() {
                     }
                 },
                 edges: {
-                    size: 15,
                     font: {
-                        size: 10,
+                        size: 9,
                         color: '#000'
                     }
                 }
@@ -225,11 +236,25 @@ $(document).ready(function() {
                 edges: edges
             };
 
-            network = new vis.Network(container, data, options);
+            var network = new vis.Network(container, data, options);
+
+            // Interactions
+            // https://github.com/almende/vis/blob/master/examples/network/events/interactionEvents.html
+
+            network.on("doubleClick", function (params) {
+                params.event = "[original event]";
+                document.getElementById('debug').innerHTML = '<h2>doubleClick event:</h2>' + JSON.stringify(params, null, 4);
+                var node_id = this.getNodeAt(params.pointer.DOM);
+                window.location.href = '/papers/' + node_id;
+            });
+
         });
     }
 
     if( hash != 'noquery' ) {
         do_qyuery();
+    }
+    if (hash == 'debug') {
+        $('#debug').show();
     }
 });
