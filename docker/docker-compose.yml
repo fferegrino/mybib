@@ -1,0 +1,22 @@
+version: '3'
+services:
+  web:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - NEO4J_URL=neo4j
+      - NEO4J_USER=neo4j
+      - NEO4J_PASS=neo4j_generic
+      - NEO4J_PORT=7687
+      - MYBIB_USER=fferegrino
+      - MYBIB_PASSWORD=generic
+  neo4j:
+    image: "neo4j:3.5.7"
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/neo4j_generic

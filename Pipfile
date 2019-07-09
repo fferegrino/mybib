@@ -12,6 +12,7 @@ flask-graphql = "*"
 graphene = "*"
 
 [dev-packages]
+docker-compose = "*"
 pytest = "*"
 pytest-cov = "*"
 
