@@ -4,15 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+"py2neo" = "*"
 bibtexparser = "*"
 flask = "*"
-gunicorn = "*"
-"py2neo" = "*"
 flask-graphql = "*"
 graphene = "*"
+gunicorn = "*"
 
 [dev-packages]
+black = "==19.3b0"
 docker-compose = "*"
+isort = "*"
 pytest = "*"
 pytest-cov = "*"
 
