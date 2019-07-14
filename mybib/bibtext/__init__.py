@@ -1,6 +1,7 @@
 import re
 
 import bibtexparser
+from bibtexparser.customization import type as bibtextparser_type
 
 
 def _split_by(text, separator=",|;"):
@@ -55,7 +56,7 @@ def _get_authors(record):
 
 
 def _customize(record):
-    record = bibtexparser.customization.bibtextparser_type(record)
+    record = bibtextparser_type(record)
     record = _get_authors(record)
     record = bibtexparser.customization.editor(record)
     record = _get_keywords(record)

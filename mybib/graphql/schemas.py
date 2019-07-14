@@ -41,7 +41,7 @@ class PaperSchema(MyBibSchema):
     authors = graphene.List(AuthorSchema)
     keywords = graphene.List(KeywordSchema)
     projects = graphene.List(ProjectSchema)
-    references = graphene.List(lambda: models.PaperSchema)
+    references = graphene.List(lambda: PaperSchema)
 
     def resolve_authors(self, info):
         return [
@@ -63,59 +63,59 @@ class PaperSchema(MyBibSchema):
 
     def resolve_references(self, info):
         return [
-            models.PaperSchema(**paper)
+            PaperSchema(**paper)
             for paper in models.Paper(ID=self.ID).fetch().fetch_references()
         ]
 
 
 class Query(graphene.ObjectType):
-    paper = graphene.Field(lambda: models.PaperSchema, ID=graphene.String())
+    paper = graphene.Field(lambda: PaperSchema, ID=graphene.String())
 
     keywords = graphene.List(lambda: KeywordSchema, keyword=graphene.String())
 
-    by_id = graphene.List(lambda: models.PaperSchema, parameter=graphene.String())
-    by_keywords = graphene.List(lambda: models.PaperSchema, parameter=graphene.String())
-    by_author = graphene.List(lambda: models.PaperSchema, parameter=graphene.String())
-    by_title = graphene.List(lambda: models.PaperSchema, parameter=graphene.String())
-    by_project = graphene.List(lambda: models.PaperSchema, parameter=graphene.String())
+    by_id = graphene.List(lambda: PaperSchema, parameter=graphene.String())
+    by_keywords = graphene.List(lambda: PaperSchema, parameter=graphene.String())
+    by_author = graphene.List(lambda: PaperSchema, parameter=graphene.String())
+    by_title = graphene.List(lambda: PaperSchema, parameter=graphene.String())
+    by_project = graphene.List(lambda: PaperSchema, parameter=graphene.String())
 
-    papers = graphene.List(lambda: models.PaperSchema)
+    papers = graphene.List(lambda: PaperSchema)
 
     def resolve_paper(self, info, ID):
         customer = models.Paper(ID=ID).fetch()
-        return models.PaperSchema(**customer.asdict())
+        return PaperSchema(**customer.asdict())
 
     def resolve_papers(self, info):
-        return [models.PaperSchema(**paper.asdict()) for paper in models.Paper().all()]
+        return [PaperSchema(**paper.asdict()) for paper in models.Paper().all()]
 
     def resolve_keywords(self, info, keyword):
         return [KeywordSchema(**kw) for kw in models.return_keywords(keyword)]
 
     def resolve_by_id(self, info, parameter):
         customer = models.Paper(ID=parameter).fetch()
-        return [models.PaperSchema(**customer.asdict())]
+        return [PaperSchema(**customer.asdict())]
 
     def resolve_by_keywords(self, info, parameter):
         return [
-            models.PaperSchema(**paper)
+            PaperSchema(**paper)
             for paper in models.return_papers_by_keyword(parameter)
         ]
 
     def resolve_by_author(self, info, parameter):
         return [
-            models.PaperSchema(**paper)
+            PaperSchema(**paper)
             for paper in models.return_papers_by_author(parameter)
         ]
 
     def resolve_by_project(self, info, parameter):
         return [
-            models.PaperSchema(**paper)
+            PaperSchema(**paper)
             for paper in models.return_papers_by_project(parameter)
         ]
 
     def resolve_by_title(self, info, parameter):
         return [
-            models.PaperSchema(**paper.asdict())
+            PaperSchema(**paper.asdict())
             for paper in models.return_papers_by_title(parameter)
         ]
 
