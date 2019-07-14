@@ -4,5 +4,5 @@ validate_indexes = Mock()
 
 
 def test_get_identifier(client):
-    expected = {'nodes': [], 'references': []}
+    expected = {"nodes": [], "references": []}
     return_value = ([], [])

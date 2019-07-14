@@ -15,8 +15,8 @@ def patch_neo4j(request):
 
 @pytest.fixture
 def auth_header():
-    valid_credentials = base64.b64encode(b'testuser:testpassword').decode('utf-8')
-    return {'Authorization': 'Basic ' + valid_credentials}
+    valid_credentials = base64.b64encode(b"testuser:testpassword").decode("utf-8")
+    return {"Authorization": "Basic " + valid_credentials}
 
 
 @pytest.fixture

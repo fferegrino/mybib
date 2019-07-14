@@ -22,7 +22,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            pipenv install --dev
+            make create_env
 
       - save_cache:
           paths:
@@ -30,9 +30,14 @@ jobs:
           key: v2-dependencies-{{ checksum "Pipfile.lock" }}
 
       - run:
-          name: Running tests
+          name: Lint
           command: |
-            pipenv run pytest --cov=mybib --cov-report html:htmlcov test/
+            make lint
+
+      - run:
+          name: Test
+          command: |
+            make run_tests
 
       - store_artifacts:
           path: htmlcov/

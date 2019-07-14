@@ -1,51 +1,58 @@
 from flask import Blueprint, render_template, request
 from werkzeug.utils import redirect
 
-from mybib.neo4j.models import Paper, Keyword, Project
+from mybib.neo4j.models import Keyword, Paper, Project
 
-frontend = Blueprint('frontend', __name__)
+frontend = Blueprint("frontend", __name__)
 
 
-@frontend.route('/admin', methods=['GET'])
+@frontend.route("/admin", methods=["GET"])
 def get_index():
-    return render_template('admin.html')
+    return render_template("admin.html")
 
 
-@frontend.route('/', methods=['GET'])
+@frontend.route("/", methods=["GET"])
 def get_graph():
-    return render_template('graph.html')
+    return render_template("graph.html")
 
 
-@frontend.route('/papers/<paper_id:identifier>', methods=['GET'])
+@frontend.route("/papers/<paper_id:identifier>", methods=["GET"])
 def get_paper(identifier):
     paper = Paper(ID=identifier).fetch()
 
-    keywords = ','.join([kw['value'] for kw in paper.fetch_keywords()])
-    projects = ','.join([pr['name'] for pr in paper.fetch_projects()])
+    keywords = ",".join([kw["value"] for kw in paper.fetch_keywords()])
+    projects = ",".join([pr["name"] for pr in paper.fetch_projects()])
 
     paper = paper.asdict()
-    title = paper.pop('title')
-    time = paper.pop('_time')
-    ID = paper.pop('ID')
-    bibtex = paper.pop('_bibtex')
-    return render_template('paper.html',
-                           ID=ID,
-                           keywords=keywords,
-                           projects=projects,
-                           title=title, paper=paper)
+    title = paper.pop("title")
+    time = paper.pop("_time")
+    ID = paper.pop("ID")
+    bibtex = paper.pop("_bibtex")
+    return render_template(
+        "paper.html",
+        ID=ID,
+        keywords=keywords,
+        projects=projects,
+        title=title,
+        paper=paper,
+    )
 
 
-@frontend.route('/papers/<paper_id:identifier>', methods=['POST'])
+@frontend.route("/papers/<paper_id:identifier>", methods=["POST"])
 def post_paper(identifier):
     updated_paper = request.form.to_dict()
 
-    new_keywords = set(updated_paper.pop('keywords').split(','))
-    new_projects = set(updated_paper.pop('projects').split(','))
-    ID = updated_paper.pop('ID')
+    new_keywords = set(updated_paper.pop("keywords").split(","))
+    new_projects = set(updated_paper.pop("projects").split(","))
+    ID = updated_paper.pop("ID")
 
     paper_to_update = Paper(ID=ID).fetch()
-    existing_keywords = {keyword['value'] for keyword in paper_to_update.fetch_keywords()}
-    existing_projects = {project['name'] for project in paper_to_update.fetch_projects()}
+    existing_keywords = {
+        keyword["value"] for keyword in paper_to_update.fetch_keywords()
+    }
+    existing_projects = {
+        project["name"] for project in paper_to_update.fetch_projects()
+    }
 
     keep_keywords = existing_keywords.intersection(new_keywords)
     to_remove_keywords = existing_keywords - keep_keywords
@@ -85,4 +92,4 @@ def post_paper(identifier):
 
     paper_to_update.save()
 
-    return redirect('/papers/' + identifier)
+    return redirect("/papers/" + identifier)
