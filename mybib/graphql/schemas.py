@@ -97,20 +97,17 @@ class Query(graphene.ObjectType):
 
     def resolve_by_keywords(self, info, parameter):
         return [
-            PaperSchema(**paper)
-            for paper in models.return_papers_by_keyword(parameter)
+            PaperSchema(**paper) for paper in models.return_papers_by_keyword(parameter)
         ]
 
     def resolve_by_author(self, info, parameter):
         return [
-            PaperSchema(**paper)
-            for paper in models.return_papers_by_author(parameter)
+            PaperSchema(**paper) for paper in models.return_papers_by_author(parameter)
         ]
 
     def resolve_by_project(self, info, parameter):
         return [
-            PaperSchema(**paper)
-            for paper in models.return_papers_by_project(parameter)
+            PaperSchema(**paper) for paper in models.return_papers_by_project(parameter)
         ]
 
     def resolve_by_title(self, info, parameter):
