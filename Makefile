@@ -16,7 +16,7 @@ create_env:
 .PHONY: create_env
 
 run_tests:
-	$(PIPENV) pytest --cov=mybib --cov-report html:htmlcov test/
+	PYTHONPATH=. $(PIPENV) pytest --cov=mybib --cov-report html:htmlcov test/
 .PHONY: run_tests
 
 format:

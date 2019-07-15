@@ -1,4 +1,4 @@
-from mybib.bibtext import load_from_string
+from mybib.bibtext.reader import load_from_string
 
 
 def test_load_from_string_dblp_format(bibtex_dblp_format, json_dblp_format):

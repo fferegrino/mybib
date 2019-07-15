@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from mybib.bibtext import load_from_string
+from mybib.bibtext.reader import load_from_string
 from mybib.neo4j.models import Author, Keyword, Paper
 from mybib.web.authentication import requires_auth
 
