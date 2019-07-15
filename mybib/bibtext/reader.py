@@ -1,6 +1,6 @@
 import bibtexparser
 
-from mybib.bibtext.record_costomization import _customize
+from mybib.bibtext.record_customization import _customize
 
 
 def get_parser():
