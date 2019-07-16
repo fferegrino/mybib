@@ -7,11 +7,11 @@ validate_indexes = Mock()
 
 
 @patch("mybib.web.api.papers.Paper", autospec=True)
-@patch("mybib.web.api.papers.Author", autospec=True)
-@patch("mybib.web.api.papers.Keyword", autospec=True)
+@patch("mybib.web.api.papers.get_create_keyword", return_value=MagicMock())
+@patch("mybib.web.api.papers.get_create_author", return_value=MagicMock())
 def test_post_inserts(
-    keyword_mock,
-    author_mock,
+    get_create_author_mock,
+    get_create_keyword_mock,
     paper_mock,
     authenticated_post,
     bibtex_multiple_authors,
@@ -20,12 +20,6 @@ def test_post_inserts(
     fake_paper = MagicMock()
     fake_paper.fetch = MagicMock(return_value=None)
     paper_mock.return_value = fake_paper
-
-    fake_author = MagicMock()
-    author_mock.return_value = fake_author
-
-    fake_keyword = MagicMock()
-    keyword_mock.return_value = fake_keyword
 
     entries = deepcopy(json_multiple_authors)
 
@@ -37,32 +31,26 @@ def test_post_inserts(
 
     response = authenticated_post("/api/papers", data=bibtex_multiple_authors)
 
-    assert len(keyword_mock.mock_calls) == len(keywords) * 3
-    assert len(author_mock.mock_calls) == len(authors) * 3
+    assert len(get_create_keyword_mock.mock_calls) == len(keywords)
+    assert len(get_create_author_mock.mock_calls) == len(authors)
     paper_mock.assert_called_once_with(**inserted_paper)
     fake_paper.save.assert_called()
     assert response.status_code == 201
 
 
 @patch("mybib.web.api.papers.Paper", autospec=True)
-@patch("mybib.web.api.papers.Author", autospec=True)
-@patch("mybib.web.api.papers.Keyword", autospec=True)
+@patch("mybib.web.api.papers.get_create_keyword", return_value=MagicMock())
+@patch("mybib.web.api.papers.get_create_author", return_value=MagicMock())
 def test_post_does_not_insert(
-    keyword_mock,
-    author_mock,
+    get_create_author_mock,
+    get_create_keyword_mock,
     paper_mock,
     authenticated_post,
     bibtex_multiple_authors,
     json_multiple_authors,
 ):
     fake_paper = MagicMock()
-    fake_paper.fetch = MagicMock(return_value=Paper(ID="ID1"))
-
-    fake_author = MagicMock()
-    author_mock.return_value = fake_author
-
-    fake_keyword = MagicMock()
-    keyword_mock.return_value = fake_keyword
+    fake_paper.fetch.return_value = Paper(ID="ID1")
 
     entries = deepcopy(json_multiple_authors)
 
@@ -74,8 +62,8 @@ def test_post_does_not_insert(
 
     response = authenticated_post("/api/papers", data=bibtex_multiple_authors)
 
-    assert len(keyword_mock.mock_calls) == 0
-    assert len(author_mock.mock_calls) == 0
+    get_create_author_mock.assert_not_called()
+    get_create_keyword_mock.assert_not_called()
     paper_mock.assert_called_once_with(**inserted_paper)
     assert not fake_paper.save.called
     assert response.status_code == 409

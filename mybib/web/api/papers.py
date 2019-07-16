@@ -13,6 +13,24 @@ def get_paper(identifier):
     return jsonify(paper.asdict())
 
 
+def get_create_keyword(keyword):
+    kw = Keyword(keyword)
+    kw_ = kw.fetch()
+    if kw_ is None:
+        kw.save()
+        return kw
+    return kw_
+
+
+def get_create_author(author):
+    auth = Author(name=author)
+    auth_ = auth.fetch()
+    if auth_ is None:
+        auth.save()
+        return auth
+    return auth_
+
+
 @papers_api.route("/api/papers", methods=["POST"])
 @requires_auth
 def post_paper():
@@ -33,22 +51,10 @@ def post_paper():
         paper_to_insert.save()
 
         for kw in keywords:
-            keyword = Keyword(value=kw)
-            fetched_keyword = keyword.fetch()
-            if fetched_keyword:
-                paper_to_insert.keywords.add(fetched_keyword)
-            else:
-                keyword.save()
-                paper_to_insert.keywords.add(keyword)
+            paper_to_insert.keywords.add(get_create_keyword(kw))
 
         for author in authors:
-            author_ = Author(name=author)
-            fetched_author = author_.fetch()
-            if fetched_author:
-                paper_to_insert.authors.add(fetched_author)
-            else:
-                author_.save()
-                paper_to_insert.authors.add(author_)
+            paper_to_insert.authors.add(get_create_author(author))
 
         paper_to_insert.save()
 
