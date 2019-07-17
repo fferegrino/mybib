@@ -4,7 +4,6 @@ from mybib.bibtext.reader import load_from_string
 from mybib.graphql.access_layer import EntityAlreadyExistsError
 from mybib.graphql.access_layer import get_paper as get_paper_da
 from mybib.graphql.access_layer import insert_paper
-from mybib.neo4j.models import Paper
 from mybib.web.authentication import requires_auth
 
 papers_api = Blueprint("papers_api", __name__)

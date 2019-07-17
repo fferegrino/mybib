@@ -1,5 +1,6 @@
 import graphene
 
+import mybib.graphql.access_layer
 from mybib.neo4j import models
 
 
@@ -89,7 +90,10 @@ class Query(graphene.ObjectType):
         return [PaperSchema(**paper.asdict()) for paper in models.Paper().all()]
 
     def resolve_keywords(self, info, keyword):
-        return [KeywordSchema(**kw) for kw in models.return_keywords(keyword)]
+        return [
+            KeywordSchema(**kw)
+            for kw in mybib.graphql.access_layer.return_keywords(keyword)
+        ]
 
     def resolve_by_id(self, info, parameter):
         customer = models.Paper(ID=parameter).fetch()
@@ -97,23 +101,26 @@ class Query(graphene.ObjectType):
 
     def resolve_by_keywords(self, info, parameter):
         return [
-            PaperSchema(**paper) for paper in models.return_papers_by_keyword(parameter)
+            PaperSchema(**paper)
+            for paper in mybib.graphql.access_layer.return_papers_by_keyword(parameter)
         ]
 
     def resolve_by_author(self, info, parameter):
         return [
-            PaperSchema(**paper) for paper in models.return_papers_by_author(parameter)
+            PaperSchema(**paper)
+            for paper in mybib.graphql.access_layer.return_papers_by_author(parameter)
         ]
 
     def resolve_by_project(self, info, parameter):
         return [
-            PaperSchema(**paper) for paper in models.return_papers_by_project(parameter)
+            PaperSchema(**paper)
+            for paper in mybib.graphql.access_layer.return_papers_by_project(parameter)
         ]
 
     def resolve_by_title(self, info, parameter):
         return [
             PaperSchema(**paper.asdict())
-            for paper in models.return_papers_by_title(parameter)
+            for paper in mybib.graphql.access_layer.return_papers_by_title(parameter)
         ]
 
 
