@@ -14,21 +14,21 @@ def test_insert_paper(
     get_create_author_mock,
     get_create_keyword_mock,
     paper_mock,
-    single_doc_multiple_authors,
+    single_json_multiple_authors,
 ):
     fake_paper = MagicMock()
     fake_paper.fetch.return_value = None
     paper_mock.return_value = fake_paper
 
-    expected_insertion = deepcopy(single_doc_multiple_authors)
+    expected_insertion = deepcopy(single_json_multiple_authors)
     keywords = expected_insertion.pop("keywords")
     authors = expected_insertion.pop("authors")
 
-    insert_paper(single_doc_multiple_authors)
+    insert_paper(single_json_multiple_authors)
 
     assert len(get_create_keyword_mock.mock_calls) == len(keywords)
     assert len(get_create_author_mock.mock_calls) == len(authors)
-    assert expected_insertion == single_doc_multiple_authors
+    assert expected_insertion == single_json_multiple_authors
     paper_mock.assert_called_once_with(**expected_insertion)
     fake_paper.save.assert_called()
 
@@ -40,18 +40,18 @@ def test_insert_paper_fails(
     get_create_author_mock,
     get_create_keyword_mock,
     paper_mock,
-    single_doc_multiple_authors,
+    single_json_multiple_authors,
 ):
     fake_paper = MagicMock()
     fake_paper.fetch.return_value = Paper(ID="ID1")
     paper_mock.return_value = fake_paper
 
-    expected_insertion = deepcopy(single_doc_multiple_authors)
+    expected_insertion = deepcopy(single_json_multiple_authors)
     expected_insertion.pop("keywords")
     expected_insertion.pop("authors")
 
     with pytest.raises(EntityAlreadyExistsError):
-        insert_paper(single_doc_multiple_authors)
+        insert_paper(single_json_multiple_authors)
 
     get_create_author_mock.assert_not_called()
     get_create_keyword_mock.assert_not_called()
