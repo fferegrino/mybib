@@ -1,4 +1,5 @@
 import base64
+from unittest.mock import patch
 
 import pytest
 
@@ -22,3 +23,14 @@ def auth_header():
 @pytest.fixture
 def client():
     return app.test_client()
+
+
+@pytest.fixture
+def authenticated_post(client, auth_header):
+    def post(*args, **kwargs):
+        kwargs["headers"] = auth_header
+        return client.post(*args, **kwargs)
+
+    with patch("mybib.web.authentication.check_auth") as check_auth:
+        check_auth.return_value = True
+        yield post

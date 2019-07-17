@@ -1,6 +1,6 @@
 import os
 
-from py2neo import Graph, NodeMatcher
+from py2neo import Graph
 from py2neo.ogm import GraphObject, Property, RelatedFrom, RelatedTo
 
 GRAPH: Graph = None
@@ -40,23 +40,6 @@ class BaseModel(GraphObject):
     def save(self):
         graph = get_graph()
         graph.push(self)
-
-
-def are_related(referee_id, referenced_id):
-    referee = Paper(ID=referee_id).fetch()
-    referenced = Paper(ID=referenced_id).fetch()
-
-    assert referee is not None
-    assert referenced is not None
-
-    graph = get_graph()
-    matches = list(
-        graph.match(
-            (referee.__ogm__.node, referenced.__ogm__.node),
-            r_type=REFERENCES_RELATIONSHIP,
-        )
-    )
-    return len(matches) > 0
 
 
 class Paper(BaseModel):
@@ -128,13 +111,7 @@ class Paper(BaseModel):
         ]
 
     def fetch_references(self):
-        return [
-            {
-                **proj[0].asdict(),
-                # **proj[1] # Reference properties
-            }
-            for proj in self.references._related_objects
-        ]
+        return [{**proj[0].asdict()} for proj in self.references._related_objects]
 
 
 class Author(BaseModel):
@@ -152,65 +129,6 @@ class Author(BaseModel):
 
     def asdict(self):
         return {"name": self.name}
-
-
-def return_keywords(query):
-    graph = get_graph()
-    matcher = NodeMatcher(graph)
-    kws = matcher.match("Keyword", value__contains=query)
-    return [dict(kw) for kw in kws]
-
-
-def return_papers_by_keyword(query):
-    graph = get_graph()
-    matcher = NodeMatcher(graph)
-    kws = matcher.match("Keyword", value__contains=query)
-    retrieved_papers = set()
-    papers = []
-    for keyword in [Keyword(**dict(kw)).fetch() for kw in kws]:
-        for paper in keyword.fetch_papers():
-            if paper["ID"] in retrieved_papers:
-                continue
-            papers.append(paper)
-            retrieved_papers.add(paper["ID"])
-    return papers
-
-
-def return_papers_by_author(query):
-    graph = get_graph()
-    matcher = NodeMatcher(graph)
-    kws = matcher.match("Author", name__contains=query)
-    retrieved_papers = set()
-    papers = []
-    for keyword in [Author(**dict(kw)).fetch() for kw in kws]:
-        for paper in keyword.fetch_papers():
-            if paper["ID"] in retrieved_papers:
-                continue
-            papers.append(paper)
-            retrieved_papers.add(paper["ID"])
-    return papers
-
-
-def return_papers_by_project(query):
-    graph = get_graph()
-    matcher = NodeMatcher(graph)
-    kws = matcher.match("Project", name__contains=query)
-    retrieved_papers = set()
-    papers = []
-    for keyword in [Project(**dict(kw)).fetch() for kw in kws]:
-        for paper in keyword.fetch_papers():
-            if paper["ID"] in retrieved_papers:
-                continue
-            papers.append(paper)
-            retrieved_papers.add(paper["ID"])
-    return papers
-
-
-def return_papers_by_title(query):
-    graph = get_graph()
-    matcher = NodeMatcher(graph)
-    nodes = matcher.match("Paper", title__contains=query)
-    return [Paper(**dict(p)) for p in nodes]
 
 
 class Keyword(BaseModel):
