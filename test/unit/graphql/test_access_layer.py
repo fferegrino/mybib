@@ -1,9 +1,14 @@
+import json
 from copy import deepcopy
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from mybib.graphql.access_layer import EntityAlreadyExistsError, insert_paper
+from mybib.graphql.access_layer import (
+    EntityAlreadyExistsError,
+    insert_paper,
+    insert_reference,
+)
 from mybib.neo4j.models import Paper
 
 
@@ -57,3 +62,54 @@ def test_insert_paper_fails(
     get_create_keyword_mock.assert_not_called()
     paper_mock.assert_called_once_with(**expected_insertion)
     fake_paper.save.assert_not_called()
+
+
+@patch("mybib.graphql.access_layer.Paper.fetch")
+@patch("mybib.graphql.access_layer.are_related", return_value=False)
+def test_insert_reference_succeeds(are_related_mock, fetch_mock):
+    referee_mock = MagicMock()
+    referenced_mock = MagicMock()
+    fetch_mock.side_effect = [referee_mock, referenced_mock]
+
+    id1 = "id1"
+    id2 = "id2"
+    expected = {"a": "reference"}
+
+    insert_reference(id1, id2, expected)
+
+    are_related_mock.assert_called_once_with(id1, id2)
+    referee_mock.references.add.assert_called_once_with(referenced_mock, expected)
+
+
+@patch("mybib.graphql.access_layer.Paper.fetch")
+@patch("mybib.graphql.access_layer.are_related", return_value=True)
+def test_insert_reference_fails_already_exists(are_related_mock, fetch_mock):
+    referee_mock = MagicMock()
+    referenced_mock = MagicMock()
+    fetch_mock.side_effect = [referee_mock, referenced_mock]
+
+    id1 = "id1"
+    id2 = "id2"
+    expected = {"a": "reference"}
+    with pytest.raises(EntityAlreadyExistsError):
+        insert_reference(id1, id2, expected)
+
+    are_related_mock.assert_called_once_with(id1, id2)
+    referee_mock.references.add.assert_not_called()
+
+
+@patch("mybib.graphql.access_layer.Paper.fetch")
+@patch("mybib.graphql.access_layer.are_related", side_effect=AssertionError())
+def test_insert_reference_fails_reference_does_not_exist(are_related_mock, fetch_mock):
+    referee_mock = MagicMock()
+    referenced_mock = MagicMock()
+    fetch_mock.side_effect = [referee_mock, referenced_mock]
+
+    id1 = "id1"
+    id2 = "id2"
+    expected = {"a": "reference"}
+    with pytest.raises(AssertionError):
+        insert_reference(id1, id2, expected)
+
+    are_related_mock.assert_called_once_with(id1, id2)
+    referee_mock.references.add.assert_not_called()
