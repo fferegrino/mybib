@@ -25,6 +25,5 @@ format:
 .PHONY: format
 
 lint:
-	$(PIPENV) isort --check-only
 	$(PIPENV) black --check $(BLACK_TARGETS)
 .PHONY: lint
