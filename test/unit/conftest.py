@@ -95,6 +95,11 @@ def json_multiple_authors():
 
 
 @pytest.fixture
+def single_doc_multiple_authors(json_multiple_authors):
+    return json_multiple_authors[0]
+
+
+@pytest.fixture
 def bibtex_single_author():
     return """@inproceedings{Petrovski:2017:EAP:3106426.3106449,
  author = {Petrovski, Petar},
