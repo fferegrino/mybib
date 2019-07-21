@@ -15,12 +15,13 @@ def execute(docker_services, service, *cmd):
 
 @pytest.fixture
 def docker_neo4j(docker_ip, docker_services):
-    port = docker_services.port_for("neo4j", 7687)
+    port = docker_services.port_for("neo4j", 7474)
     url = f"http://{docker_ip}:{port}"
     docker_services.wait_until_responsive(
-        timeout=30.0, pause=0.1, check=lambda: is_responsive(url)
+        timeout=180.0, pause=0.1, check=lambda: is_responsive(url)
     )
-    return url
+    bolt_url = f"http://{docker_ip}:7687"
+    return bolt_url
 
 
 def is_responsive(url):
