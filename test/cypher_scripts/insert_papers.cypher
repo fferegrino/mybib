@@ -1,2 +1,2 @@
-LOAD CSV WITH HEADERS FROM 'file:///import/papers/papers.csv' AS line
+LOAD CSV WITH HEADERS FROM 'file:///papers/papers.csv' AS line
 CREATE (:Paper{ID:line["ID"], ENTRYTYPE:line["ENTRYTYPE"], _bibtex:line["_bibtex"], address:line["address"], booktitle:line["booktitle"], doi:line["doi"], isbn:line["isbn"], pages:line["pages"], publisher:line["publisher"], title:line["title"], url:line["url"], year:line["year"]});

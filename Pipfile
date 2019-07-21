@@ -10,7 +10,6 @@ flask = "*"
 flask-graphql = "*"
 graphene = "*"
 gunicorn = "*"
-lovely-pytest-docker = "*"
 
 [dev-packages]
 black = "==19.3b0"
@@ -18,6 +17,8 @@ docker-compose = "*"
 isort = "*"
 pytest = "*"
 pytest-cov = "*"
+pytest-docker = "*"
+requests = "*"
 
 [requires]
 python_version = "3.6"
