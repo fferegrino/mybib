@@ -1,13 +1,12 @@
 version: '3'
 services:
   neo4j:
-    image: "neo4j:3.5.7"
+    image: "bitnami/neo4j:latest"
     ports:
       - "7474:7474"
       - "7687:7687"
     environment:
-      - NEO4J_AUTH=neo4j/neo4j_generic
       - NEO4J_USERNAME=neo4j
       - NEO4J_PASSWORD=neo4j_generic
     volumes:
-      - ../test/cypher_scripts:/var/lib/neo4j/import
+      - ../test/cypher_scripts:/bitnami/neo4j/import

@@ -10,6 +10,9 @@ WROTE_RELATIONSHIP = "WROTE"
 HAS_KEYWORD_RELATIONSHIP = "HAS_KEYWORD"
 PART_OF_RELATIONSHIP = "PART_OF"
 
+def refresh_graph():
+    global GRAPH
+    GRAPH =None
 
 def get_graph():
     global GRAPH
